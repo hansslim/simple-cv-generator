@@ -41,4 +41,4 @@ Aplikace nevyžaduje instalaci balíčků ani buildovací nástroje.
 
 ## Licence
 
-MIT
+MIT (vibecoded by Gemini 3.7 Flash)
