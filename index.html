@@ -42,6 +42,7 @@
 
     .editor-pane {
       width: 44%;
+      min-width: 360px;
       height: 100%;
       overflow-y: auto;
       padding: 24px;
@@ -53,14 +54,15 @@
     }
 
     .preview-pane {
-      width: 56%;
+      flex: 1;
+      min-width: 0;
       height: 100%;
-      overflow-y: auto;
+      overflow: auto;
       padding: 30px;
       background: #475569;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: safe center;
       gap: 30px;
     }
 
@@ -154,6 +156,8 @@
     .page-indicator {
       width: 100%;
       max-width: var(--a4-w);
+      margin-left: auto;
+      margin-right: auto;
       padding: 8px 16px;
       background: #ffffff;
       border-radius: 4px;
@@ -162,6 +166,7 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      flex-shrink: 0;
     }
 
     .form-section {
@@ -332,6 +337,8 @@
       width: var(--a4-w);
       min-height: var(--a4-h);
       height: var(--a4-h);
+      margin-left: auto;
+      margin-right: auto;
       background: #ffffff;
       box-shadow: 0 4px 16px rgba(0,0,0,0.35);
       position: relative;
@@ -521,6 +528,31 @@
     .sheet-header [contenteditable="true"]:focus {
       background-color: rgba(255, 255, 255, 0.28);
       box-shadow: 0 0 0 1px #ffffff;
+    }
+
+    @media (max-width: 960px) {
+      #app {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+      }
+
+      .editor-pane {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        overflow: visible;
+        border-right: none;
+        border-bottom: 2px solid #cbd5e1;
+      }
+
+      .preview-pane {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+        overflow-x: auto;
+      }
     }
 
     @media print {
@@ -1212,7 +1244,7 @@
       interests: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>'
     };
 
-    const { createApp, ref, computed, onMounted } = Vue;
+    const { createApp, ref, computed } = Vue;
 
     createApp({
       setup() {
@@ -1471,31 +1503,6 @@
           }
           draggedItemInfo.value = null;
         };
-
-        const autoLoadJson = async () => {
-          try {
-            const response = await fetch("./cv.json");
-            if (response.ok) {
-              const data = await response.json();
-              if (!data.sectionOrder) data.sectionOrder = [...defaultSectionOrder];
-              if (data.splitPoint === undefined) data.splitPoint = { section: "certificates", itemIndex: 2 };
-              if (data.scale === undefined) data.scale = 1;
-              if (data.primaryColor === undefined) data.primaryColor = "#005aa0";
-              if (data.experience) {
-                data.experience.forEach(exp => {
-                  if (!exp.periods) {
-                    exp.periods = exp.period ? [exp.period] : [""];
-                  }
-                });
-              }
-              cv.value = Object.assign(JSON.parse(JSON.stringify(emptyTemplate)), data);
-            }
-          } catch (e) {}
-        };
-
-        onMounted(() => {
-          autoLoadJson();
-        });
 
         const triggerPrint = () => {
           window.print();
