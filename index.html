@@ -522,7 +522,7 @@
       font-size: calc(26px * var(--cv-scale));
       font-weight: 700;
       letter-spacing: -0.2px;
-      margin-bottom: calc(7px * var(--cv-scale));
+      margin-bottom: calc(var(--name-mb, 7px) * var(--cv-scale));
       color: #ffffff;
       line-height: 1.2;
     }
@@ -664,6 +664,14 @@
       white-space: pre-line;
       font-size: calc(11.5px * var(--cv-scale));
       line-height: 1.4;
+    }
+
+    .entry-reference {
+      font-style: italic;
+      color: #475569;
+      font-size: calc(11px * var(--cv-scale));
+      margin-top: calc(3px * var(--cv-scale));
+      line-height: 1.35;
     }
 
     .sub-category-block {
@@ -980,6 +988,27 @@
 
         <div class="form-group" style="margin-top: 10px;">
           <label style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Mezera pod jménem (nad údaji)</span>
+            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7 }} px</span>
+          </label>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button class="btn btn-icon" @click="changeNameMarginBottom(-1)" :disabled="(cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) <= 0" title="Zmenšit">-</button>
+            <input
+              type="range"
+              min="0"
+              max="40"
+              step="1"
+              :value="cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7"
+              @input="cv.nameMarginBottom = Number($event.target.value)"
+              style="flex: 1; accent-color: #2563eb;"
+            >
+            <button class="btn btn-icon" @click="changeNameMarginBottom(1)" :disabled="(cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) >= 40" title="Zvětšit">+</button>
+            <button class="btn btn-icon" @click="cv.nameMarginBottom = 7" title="Reset na výchozí (7 px)" style="font-size: 10px; padding: 2px 5px;">7px</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label style="display: flex; justify-content: space-between; align-items: center;">
             <span>Modrý prostor pod údaji</span>
             <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22 }} px</span>
           </label>
@@ -1125,6 +1154,11 @@
             <div class="form-group">
               <label>Náplň práce</label>
               <textarea v-model="item.description"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Reference (volitelné)</label>
+              <input type="text" v-model="item.reference" placeholder="např. Ing. Petr Novák, CTO, email: petr@firma.cz, tel.: 777 777 777">
             </div>
           </div>
         </template>
@@ -1317,7 +1351,7 @@
           </div>
         </div>
 
-        <div class="print-page" :class="{ 'is-single-page': !renderedPages.page2.length }" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px', '--cv-left-col': (cv.leftColWidth || 100) + 'px', '--header-pt': (cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) + 'px', '--header-pb': (cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) + 'px' }">
+        <div class="print-page" :class="{ 'is-single-page': !renderedPages.page2.length }" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px', '--cv-left-col': (cv.leftColWidth || 100) + 'px', '--header-pt': (cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) + 'px', '--header-pb': (cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) + 'px', '--name-mb': (cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) + 'px' }">
           <div class="a4-guide-line" v-if="showA4Guide && !renderedPages.page2.length" title="Hranice formátu A4 (297 mm)">
             <span class="a4-guide-badge">Konec A4 (297 mm)</span>
           </div>
@@ -1367,6 +1401,7 @@
                     <div class="entry-subtitle" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
                     <div class="entry-period" v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
                     <div class="entry-desc" v-if="item.description" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
+                    <div class="entry-reference" v-if="item.reference">Reference: <span contenteditable="true" @blur="onInlineEdit(item, 'reference', $event)">{{ item.reference }}</span></div>
                   </div>
                 </template>
                 <template v-else-if="block.type === 'languages'">
@@ -1451,6 +1486,7 @@
                     <div class="entry-subtitle" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
                     <div class="entry-period" v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
                     <div class="entry-desc" v-if="item.description" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
+                    <div class="entry-reference" v-if="item.reference">Reference: <span contenteditable="true" @blur="onInlineEdit(item, 'reference', $event)">{{ item.reference }}</span></div>
                   </div>
                 </template>
                 <template v-else-if="block.type === 'languages'">
@@ -1582,6 +1618,7 @@
       leftColWidth: 100,
       headerPaddingTop: 22,
       headerPaddingBottom: 22,
+      nameMarginBottom: 7,
       splitPoint: { section: "certificates", itemIndex: 2 },
       sectionOrder: [...defaultSectionOrder],
       sectionTitles: { ...defaultSectionTitles },
@@ -1671,6 +1708,12 @@
           const current = cv.value.headerPaddingBottom !== undefined ? cv.value.headerPaddingBottom : 22;
           const nextVal = Math.min(70, Math.max(0, current + delta));
           cv.value.headerPaddingBottom = nextVal;
+        };
+
+        const changeNameMarginBottom = (delta) => {
+          const current = cv.value.nameMarginBottom !== undefined ? cv.value.nameMarginBottom : 7;
+          const nextVal = Math.min(40, Math.max(0, current + delta));
+          cv.value.nameMarginBottom = nextVal;
         };
 
         const onInlineEdit = (targetObj, key, event) => {
@@ -1874,7 +1917,7 @@
 
         const addItemBySection = (key) => {
           if (key === "education") addItem(cv.value.education, { school: '', field: '', period: '', degree: '' });
-          if (key === "experience") addItem(cv.value.experience, { position: '', company: '', periods: [''], description: '' });
+          if (key === "experience") addItem(cv.value.experience, { position: '', company: '', periods: [''], description: '', reference: '' });
           if (key === "languages") addItem(cv.value.languages, { name: '', level: '' });
           if (key === "drivingLicenses") addItem(cv.value.drivingLicenses, { group: '', note: '' });
           if (key === "certificates") addItem(cv.value.certificates, { title: '', desc: '', date: '' });
@@ -1939,6 +1982,7 @@
             leftColWidth: cv.value.leftColWidth || 100,
             headerPaddingTop: cv.value.headerPaddingTop !== undefined ? cv.value.headerPaddingTop : 22,
             headerPaddingBottom: cv.value.headerPaddingBottom !== undefined ? cv.value.headerPaddingBottom : 22,
+            nameMarginBottom: cv.value.nameMarginBottom !== undefined ? cv.value.nameMarginBottom : 7,
             splitPoint: cv.value.splitPoint,
             sectionOrder: cv.value.sectionOrder,
             sectionTitles: cv.value.sectionTitles || { ...defaultSectionTitles },
@@ -2009,6 +2053,7 @@
           changeLeftColWidth,
           changeHeaderPaddingTop,
           changeHeaderPaddingBottom,
+          changeNameMarginBottom,
           showA4Guide,
           fileInput,
           photoInput,
