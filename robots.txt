@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hansslim.github.io/simple-cv-generator/sitemap.xml

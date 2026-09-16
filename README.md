@@ -1,6 +1,6 @@
 # Simple CV Generator
 
-Jednoduchý webový editor strukturovaného životopisu navržený pro přímý export a tisk do formátu A4. Funguje čistě na straně klienta – bez backendu, registrace a odesílání dat na vzdálené servery.
+Jednoduchý open-source webový editor strukturovaného životopisu navržený pro přímý export a tisk do formátu A4. Funguje čistě na straně klienta – bez backendu, registrace a odesílání dat na vzdálené servery.
 
 ## Přehled funkcí
 
