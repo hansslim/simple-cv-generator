@@ -424,7 +424,7 @@
     .sheet-header {
       background: var(--cv-blue);
       color: #ffffff;
-      padding: calc(10px * var(--cv-scale)) calc(32px * var(--cv-scale)) calc(13px * var(--cv-scale));
+      padding: calc(22px * var(--cv-scale)) calc(32px * var(--cv-scale));
       display: block;
       position: relative;
       flex-shrink: 0;
@@ -440,7 +440,7 @@
       overflow: hidden;
       background: #ffffff;
       margin-left: calc(20px * var(--cv-scale));
-      margin-top: calc(4px * var(--cv-scale));
+      margin-top: calc(0px * var(--cv-scale));
       margin-bottom: calc(-1 * var(--photo-size, 140px) * 0.7 * var(--cv-scale));
       shape-outside: circle(50%);
       shape-margin: calc(12px * var(--cv-scale));
@@ -530,7 +530,7 @@
     }
 
     .section-label {
-      width: calc(115px * var(--cv-scale));
+      width: calc(var(--cv-left-col, 100px) * var(--cv-scale));
       flex-shrink: 0;
       font-weight: 700;
       color: var(--cv-dark);
@@ -890,6 +890,27 @@
             <span style="font-size: 11px; color: #64748b; font-family: monospace;">{{ cv.primaryColor }}</span>
           </div>
         </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Šířka levého sloupce (nadpisy sekcí)</span>
+            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.leftColWidth || 100 }} px</span>
+          </label>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button class="btn btn-icon" @click="changeLeftColWidth(-5)" :disabled="(cv.leftColWidth || 100) <= 70" title="Zúžit">-</button>
+            <input
+              type="range"
+              min="70"
+              max="200"
+              step="5"
+              :value="cv.leftColWidth || 100"
+              @input="cv.leftColWidth = Number($event.target.value)"
+              style="flex: 1; accent-color: #2563eb;"
+            >
+            <button class="btn btn-icon" @click="changeLeftColWidth(5)" :disabled="(cv.leftColWidth || 100) >= 200" title="Rozšířit">+</button>
+            <button class="btn btn-icon" @click="cv.leftColWidth = 100" title="Reset na výchozí šířku (100 px)" style="font-size: 10px; padding: 2px 5px;">100px</button>
+          </div>
+        </div>
       </div>
 
       <div
@@ -1183,7 +1204,7 @@
       <div class="preview-container">
         <div class="page-indicator">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div>Náhled: <strong>Strana 1</strong> (editovatelný)</div>
+            <div>Náhled: <strong>Strana 1</strong></div>
             <label class="guide-toggle" v-if="!renderedPages.page2.length" title="Zobrazit / skrýt hranici 1. strany A4 (297 mm)">
               <input type="checkbox" v-model="showA4Guide">
               Vyznačit konec A4
@@ -1199,7 +1220,7 @@
           </div>
         </div>
 
-        <div class="print-page" :class="{ 'is-single-page': !renderedPages.page2.length }" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px' }">
+        <div class="print-page" :class="{ 'is-single-page': !renderedPages.page2.length }" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px', '--cv-left-col': (cv.leftColWidth || 100) + 'px' }">
           <div class="a4-guide-line" v-if="showA4Guide && !renderedPages.page2.length" title="Hranice formátu A4 (297 mm)">
             <span class="a4-guide-badge">Konec A4 (297 mm)</span>
           </div>
@@ -1304,10 +1325,10 @@
       </div>
 
       <div class="page-indicator" v-if="renderedPages.page2.length">
-        <div>Náhled: <strong>Strana 2</strong> (texty můžete upravovat přímo zde)</div>
+        <div>Náhled: <strong>Strana 2</strong></div>
       </div>
 
-      <div class="print-page" v-if="renderedPages.page2.length" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px' }">
+      <div class="print-page" v-if="renderedPages.page2.length" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px', '--cv-left-col': (cv.leftColWidth || 100) + 'px' }">
         <main class="page-body page-body-subsequent">
           <template v-for="block in renderedPages.page2" :key="'p2-'+block.key">
             <div class="cv-section">
@@ -1450,6 +1471,7 @@
       },
       primaryColor: "#005aa0",
       scale: 1.2,
+      leftColWidth: 100,
       splitPoint: { section: "certificates", itemIndex: 2 },
       sectionOrder: [...defaultSectionOrder],
       education: [],
@@ -1520,6 +1542,12 @@
           const current = cv.value.personal.photoSize || 140;
           const nextVal = Math.min(220, Math.max(80, current + delta));
           cv.value.personal.photoSize = nextVal;
+        };
+
+        const changeLeftColWidth = (delta) => {
+          const current = cv.value.leftColWidth || 100;
+          const nextVal = Math.min(200, Math.max(70, current + delta));
+          cv.value.leftColWidth = nextVal;
         };
 
         const onInlineEdit = (targetObj, key, event) => {
@@ -1784,6 +1812,7 @@
             personal: cv.value.personal,
             primaryColor: cv.value.primaryColor,
             scale: cv.value.scale,
+            leftColWidth: cv.value.leftColWidth || 100,
             splitPoint: cv.value.splitPoint,
             sectionOrder: cv.value.sectionOrder,
             education: cv.value.education,
@@ -1824,6 +1853,7 @@
               if (parsed.personal.photoSize === undefined) parsed.personal.photoSize = 140;
               if (parsed.splitPoint === undefined) parsed.splitPoint = { section: "certificates", itemIndex: 2 };
               if (parsed.scale === undefined) parsed.scale = 1.2;
+              if (parsed.leftColWidth === undefined) parsed.leftColWidth = 100;
               if (parsed.primaryColor === undefined) parsed.primaryColor = "#005aa0";
               if (parsed.experience) {
                 parsed.experience.forEach(exp => {
@@ -1863,6 +1893,7 @@
           contactOrder,
           visibleContacts,
           changePhotoSize,
+          changeLeftColWidth,
           showA4Guide,
           fileInput,
           photoInput,
