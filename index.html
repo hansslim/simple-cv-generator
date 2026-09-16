@@ -1928,61 +1928,6 @@
           reader.onload = (event) => {
             try {
               const parsed = JSON.parse(event.target.result);
-              if (!parsed.sectionOrder) parsed.sectionOrder = [...defaultSectionOrder];
-              if (!parsed.sectionTitles) {
-                parsed.sectionTitles = { ...defaultSectionTitles };
-              } else {
-                parsed.sectionTitles = Object.assign({ ...defaultSectionTitles }, parsed.sectionTitles);
-              }
-              if (!parsed.personal) parsed.personal = {};
-              if (!parsed.personal.contactOrder || !parsed.personal.contactOrder.length) parsed.personal.contactOrder = [...defaultContactOrder];
-              if (parsed.personal.photoSize === undefined) parsed.personal.photoSize = 140;
-              if (parsed.splitPoint === undefined) parsed.splitPoint = { section: "certificates", itemIndex: 2 };
-              if (parsed.scale === undefined) parsed.scale = 1.2;
-              if (parsed.leftColWidth === undefined) parsed.leftColWidth = 100;
-              if (parsed.primaryColor === undefined) parsed.primaryColor = "#005aa0";
-              if (parsed.experience) {
-                parsed.experience.forEach(exp => {
-                  if (!exp.periods) {
-                    exp.periods = exp.period ? [exp.period] : [""];
-                  }
-                });
-              }
-              if (parsed.skillsCategories && typeof parsed.skillsCategories === 'object' && !Array.isArray(parsed.skillsCategories)) {
-                const converted = [];
-                for (const [catName, catItems] of Object.entries(parsed.skillsCategories)) {
-                  if (Array.isArray(catItems)) {
-                    const items = catItems.map(item => {
-                      if (typeof item === 'string') return { name: item, level: '' };
-                      if (item && typeof item === 'object') return { name: item.name || '', level: item.level || '' };
-                      return { name: String(item), level: '' };
-                    });
-                    converted.push({ category: catName, items });
-                  }
-                }
-                parsed.skillsCategories = converted;
-              } else if (Array.isArray(parsed.skillsCategories)) {
-                parsed.skillsCategories = parsed.skillsCategories.map(cat => {
-                  if (typeof cat === 'string') {
-                    return { category: cat, items: [] };
-                  }
-                  const items = Array.isArray(cat.items) ? cat.items.map(it => {
-                    if (typeof it === 'string') return { name: it, level: '' };
-                    return { name: it.name || '', level: it.level || '' };
-                  }) : [];
-                  return {
-                    category: cat.category || '',
-                    items
-                  };
-                });
-              } else if (parsed.skills && Array.isArray(parsed.skills)) {
-                parsed.skillsCategories = [
-                  {
-                    category: "Dovednosti",
-                    items: parsed.skills.map(s => (typeof s === 'string' ? { name: s, level: '' } : { name: s.name || '', level: s.level || '' }))
-                  }
-                ];
-              }
               cv.value = Object.assign(JSON.parse(JSON.stringify(emptyTemplate)), parsed);
               e.target.value = "";
             } catch (err) {
