@@ -184,6 +184,13 @@
       border-radius: 6px;
       padding: 14px;
       background: #ffffff;
+      transition: all 0.15s ease;
+    }
+
+    .form-section.is-collapsed .section-header-bar {
+      margin-bottom: 0;
+      border-bottom: none;
+      padding-bottom: 0;
     }
 
     .section-header-bar {
@@ -195,6 +202,27 @@
       border-bottom: 1px solid #f1f5f9;
       padding-bottom: 6px;
       flex-wrap: wrap;
+    }
+
+    .collapse-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 6px;
+      cursor: pointer;
+    }
+
+    .chevron-icon {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+      transition: transform 0.2s ease;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .chevron-icon.is-collapsed {
+      transform: rotate(180deg);
     }
 
     .section-header-title {
@@ -852,179 +880,200 @@
         </div>
       </div>
 
-      <div class="form-section">
-        <div class="section-header-bar">
+      <!-- OSOBNÍ ÚDAJE -->
+      <div class="form-section" :class="{ 'is-collapsed': isCollapsed('personal') }">
+        <div class="section-header-bar" style="cursor: pointer;" @click="toggleCollapse('personal')">
           <span class="section-header-title">Osobní údaje</span>
+          <div class="order-controls">
+            <button class="btn btn-icon collapse-btn" @click.stop="toggleCollapse('personal')" :title="isCollapsed('personal') ? 'Rozbalit' : 'Sbalit'">
+              <svg class="chevron-icon" :class="{ 'is-collapsed': isCollapsed('personal') }" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Jméno a příjmení</label>
-          <input type="text" v-model="cv.personal.fullName">
-        </div>
+        <div v-show="!isCollapsed('personal')">
+          <div class="form-group">
+            <label>Jméno a příjmení</label>
+            <input type="text" v-model="cv.personal.fullName">
+          </div>
 
-        <div style="margin-top: 12px; margin-bottom: 6px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
-          Kontaktní údaje (pořadí zobrazení ve 2 sloupcích)
-        </div>
+          <div style="margin-top: 12px; margin-bottom: 6px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
+            Kontaktní údaje (pořadí zobrazení ve 2 sloupcích)
+          </div>
 
-        <div
-          v-for="(fieldKey, fIdx) in contactOrder"
-          :key="'field-'+fieldKey"
-          class="item-card"
-          style="padding: 6px 10px; margin-bottom: 6px;"
-          draggable="true"
-          @dragstart.stop="onItemDragStart(cv.personal.contactOrder, fIdx, $event)"
-          @dragover.prevent
-          @drop.stop="onItemDrop(cv.personal.contactOrder, fIdx)"
-        >
-          <div class="item-card-header" style="margin-bottom: 4px;">
-            <span class="drag-handle" style="font-size: 11px; display: inline-flex; align-items: center; gap: 4px;">
-              <span v-html="contactMeta[fieldKey].icon" style="display: inline-flex; width: 13px; height: 13px; fill: #64748b;"></span>
-              {{ contactMeta[fieldKey].label }}
-            </span>
-            <div class="order-controls">
-              <button class="btn btn-icon" :disabled="fIdx === 0" @click="moveItem(cv.personal.contactOrder, fIdx, -1)">▲</button>
-              <button class="btn btn-icon" :disabled="fIdx === cv.personal.contactOrder.length - 1" @click="moveItem(cv.personal.contactOrder, fIdx, 1)">▼</button>
+          <div
+            v-for="(fieldKey, fIdx) in contactOrder"
+            :key="'field-'+fieldKey"
+            class="item-card"
+            style="padding: 6px 10px; margin-bottom: 6px;"
+            draggable="true"
+            @dragstart.stop="onItemDragStart(cv.personal.contactOrder, fIdx, $event)"
+            @dragover.prevent
+            @drop.stop="onItemDrop(cv.personal.contactOrder, fIdx)"
+          >
+            <div class="item-card-header" style="margin-bottom: 4px;">
+              <span class="drag-handle" style="font-size: 11px; display: inline-flex; align-items: center; gap: 4px;">
+                <span v-html="contactMeta[fieldKey].icon" style="display: inline-flex; width: 13px; height: 13px; fill: #64748b;"></span>
+                {{ contactMeta[fieldKey].label }}
+              </span>
+              <div class="order-controls">
+                <button class="btn btn-icon" :disabled="fIdx === 0" @click="moveItem(cv.personal.contactOrder, fIdx, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="fIdx === cv.personal.contactOrder.length - 1" @click="moveItem(cv.personal.contactOrder, fIdx, 1)">▼</button>
+              </div>
+            </div>
+            <input type="text" v-model="cv.personal[fieldKey]" :placeholder="contactMeta[fieldKey].label">
+          </div>
+        </div>
+      </div>
+
+      <!-- NASTAVENÍ VZHLEDU A ROZVRŽENÍ -->
+      <div class="form-section" :class="{ 'is-collapsed': isCollapsed('layout') }">
+        <div class="section-header-bar" style="cursor: pointer;" @click="toggleCollapse('layout')">
+          <span class="section-header-title">Vzhled a rozvržení</span>
+          <div class="order-controls">
+            <button class="btn btn-icon collapse-btn" @click.stop="toggleCollapse('layout')" :title="isCollapsed('layout') ? 'Rozbalit' : 'Sbalit'">
+              <svg class="chevron-icon" :class="{ 'is-collapsed': isCollapsed('layout') }" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div v-show="!isCollapsed('layout')">
+          <div class="form-group" style="margin-top: 4px;">
+            <label>Fotografie</label>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn" style="flex: 1;" @click="triggerPhotoSelect">Vybrat soubor...</button>
+              <button class="btn btn-danger" v-if="cv.personal.photoPath" @click="cv.personal.photoPath = ''">Smazat</button>
+            </div>
+            <input type="file" ref="photoInput" class="hidden-input" accept="image/*" @change="handlePhotoUpload">
+          </div>
+          <div class="form-group" style="margin-top: 6px;">
+            <label>Cesta k souboru fotografie (nebo URL)</label>
+            <input type="text" v-model="cv.personal.photoPath" placeholder="Cesta nebo datová URI">
+          </div>
+          <div class="form-group" style="margin-top: 6px;" v-if="cv.personal.photoPath">
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Velikost fotografie</span>
+              <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.personal.photoSize || 140 }} px</span>
+            </label>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button class="btn btn-icon" @click="changePhotoSize(-5)" :disabled="(cv.personal.photoSize || 140) <= 80" title="Zmenšit">-</button>
+              <input
+                type="range"
+                min="80"
+                max="220"
+                step="5"
+                :value="cv.personal.photoSize || 140"
+                @input="cv.personal.photoSize = Number($event.target.value)"
+                style="flex: 1; accent-color: #2563eb;"
+              >
+              <button class="btn btn-icon" @click="changePhotoSize(5)" :disabled="(cv.personal.photoSize || 140) >= 220" title="Zvětšit">+</button>
+              <button class="btn btn-icon" @click="cv.personal.photoSize = 140" title="Reset na výchozí velikost (140 px)" style="font-size: 10px; padding: 2px 5px;">140px</button>
             </div>
           </div>
-          <input type="text" v-model="cv.personal[fieldKey]" :placeholder="contactMeta[fieldKey].label">
-        </div>
 
-        <div class="form-group" style="margin-top: 10px;">
-          <label>Fotografie</label>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn" style="flex: 1;" @click="triggerPhotoSelect">Vybrat soubor...</button>
-            <button class="btn btn-danger" v-if="cv.personal.photoPath" @click="cv.personal.photoPath = ''">Smazat</button>
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Barva záhlaví a prvků</label>
+            <div class="color-picker-row">
+              <button
+                v-for="color in presetColors"
+                :key="color"
+                type="button"
+                class="color-swatch"
+                :class="{ active: cv.primaryColor.toLowerCase() === color.toLowerCase() }"
+                :style="{ backgroundColor: color }"
+                @click="cv.primaryColor = color"
+                :title="color"
+              ></button>
+              <input
+                type="color"
+                v-model="cv.primaryColor"
+                class="color-input-custom"
+                title="Vlastní barva"
+              >
+              <span style="font-size: 11px; color: #64748b; font-family: monospace;">{{ cv.primaryColor }}</span>
+            </div>
           </div>
-          <input type="file" ref="photoInput" class="hidden-input" accept="image/*" @change="handlePhotoUpload">
-        </div>
-        <div class="form-group" style="margin-top: 6px;">
-          <label>Cesta k souboru fotografie (nebo URL)</label>
-          <input type="text" v-model="cv.personal.photoPath" placeholder="Cesta nebo datová URI">
-        </div>
-        <div class="form-group" style="margin-top: 6px;" v-if="cv.personal.photoPath">
-          <label style="display: flex; justify-content: space-between; align-items: center;">
-            <span>Velikost fotografie</span>
-            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.personal.photoSize || 140 }} px</span>
-          </label>
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <button class="btn btn-icon" @click="changePhotoSize(-5)" :disabled="(cv.personal.photoSize || 140) <= 80" title="Zmenšit">-</button>
-            <input
-              type="range"
-              min="80"
-              max="220"
-              step="5"
-              :value="cv.personal.photoSize || 140"
-              @input="cv.personal.photoSize = Number($event.target.value)"
-              style="flex: 1; accent-color: #2563eb;"
-            >
-            <button class="btn btn-icon" @click="changePhotoSize(5)" :disabled="(cv.personal.photoSize || 140) >= 220" title="Zvětšit">+</button>
-            <button class="btn btn-icon" @click="cv.personal.photoSize = 140" title="Reset na výchozí velikost (140 px)" style="font-size: 10px; padding: 2px 5px;">140px</button>
-          </div>
-        </div>
 
-        <div class="form-group" style="margin-top: 10px;">
-          <label>Barva záhlaví a prvků</label>
-          <div class="color-picker-row">
-            <button
-              v-for="color in presetColors"
-              :key="color"
-              type="button"
-              class="color-swatch"
-              :class="{ active: cv.primaryColor.toLowerCase() === color.toLowerCase() }"
-              :style="{ backgroundColor: color }"
-              @click="cv.primaryColor = color"
-              :title="color"
-            ></button>
-            <input
-              type="color"
-              v-model="cv.primaryColor"
-              class="color-input-custom"
-              title="Vlastní barva"
-            >
-            <span style="font-size: 11px; color: #64748b; font-family: monospace;">{{ cv.primaryColor }}</span>
+          <div class="form-group" style="margin-top: 10px;">
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Šířka levého sloupce (nadpisy sekcí)</span>
+              <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.leftColWidth || 100 }} px</span>
+            </label>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button class="btn btn-icon" @click="changeLeftColWidth(-5)" :disabled="(cv.leftColWidth || 100) <= 70" title="Zúžit">-</button>
+              <input
+                type="range"
+                min="70"
+                max="200"
+                step="5"
+                :value="cv.leftColWidth || 100"
+                @input="cv.leftColWidth = Number($event.target.value)"
+                style="flex: 1; accent-color: #2563eb;"
+              >
+              <button class="btn btn-icon" @click="changeLeftColWidth(5)" :disabled="(cv.leftColWidth || 100) >= 200" title="Rozšířit">+</button>
+              <button class="btn btn-icon" @click="cv.leftColWidth = 100" title="Reset na výchozí šířku (100 px)" style="font-size: 10px; padding: 2px 5px;">100px</button>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group" style="margin-top: 10px;">
-          <label style="display: flex; justify-content: space-between; align-items: center;">
-            <span>Šířka levého sloupce (nadpisy sekcí)</span>
-            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.leftColWidth || 100 }} px</span>
-          </label>
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <button class="btn btn-icon" @click="changeLeftColWidth(-5)" :disabled="(cv.leftColWidth || 100) <= 70" title="Zúžit">-</button>
-            <input
-              type="range"
-              min="70"
-              max="200"
-              step="5"
-              :value="cv.leftColWidth || 100"
-              @input="cv.leftColWidth = Number($event.target.value)"
-              style="flex: 1; accent-color: #2563eb;"
-            >
-            <button class="btn btn-icon" @click="changeLeftColWidth(5)" :disabled="(cv.leftColWidth || 100) >= 200" title="Rozšířit">+</button>
-            <button class="btn btn-icon" @click="cv.leftColWidth = 100" title="Reset na výchozí šířku (100 px)" style="font-size: 10px; padding: 2px 5px;">100px</button>
+          <div class="form-group" style="margin-top: 10px;">
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Odsazení jména od vrchu stránky</span>
+              <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22 }} px</span>
+            </label>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button class="btn btn-icon" @click="changeHeaderPaddingTop(-2)" :disabled="(cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) <= 0" title="Zmenšit">-</button>
+              <input
+                type="range"
+                min="0"
+                max="70"
+                step="2"
+                :value="cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22"
+                @input="cv.headerPaddingTop = Number($event.target.value)"
+                style="flex: 1; accent-color: #2563eb;"
+              >
+              <button class="btn btn-icon" @click="changeHeaderPaddingTop(2)" :disabled="(cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) >= 70" title="Zvětšit">+</button>
+              <button class="btn btn-icon" @click="cv.headerPaddingTop = 22" title="Reset na výchozí (22 px)" style="font-size: 10px; padding: 2px 5px;">22px</button>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group" style="margin-top: 10px;">
-          <label style="display: flex; justify-content: space-between; align-items: center;">
-            <span>Odsazení jména od vrchu stránky</span>
-            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22 }} px</span>
-          </label>
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <button class="btn btn-icon" @click="changeHeaderPaddingTop(-2)" :disabled="(cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) <= 0" title="Zmenšit">-</button>
-            <input
-              type="range"
-              min="0"
-              max="70"
-              step="2"
-              :value="cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22"
-              @input="cv.headerPaddingTop = Number($event.target.value)"
-              style="flex: 1; accent-color: #2563eb;"
-            >
-            <button class="btn btn-icon" @click="changeHeaderPaddingTop(2)" :disabled="(cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) >= 70" title="Zvětšit">+</button>
-            <button class="btn btn-icon" @click="cv.headerPaddingTop = 22" title="Reset na výchozí (22 px)" style="font-size: 10px; padding: 2px 5px;">22px</button>
+          <div class="form-group" style="margin-top: 10px;">
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Mezera pod jménem (nad údaji)</span>
+              <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7 }} px</span>
+            </label>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button class="btn btn-icon" @click="changeNameMarginBottom(-1)" :disabled="(cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) <= 0" title="Zmenšit">-</button>
+              <input
+                type="range"
+                min="0"
+                max="40"
+                step="1"
+                :value="cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7"
+                @input="cv.nameMarginBottom = Number($event.target.value)"
+                style="flex: 1; accent-color: #2563eb;"
+              >
+              <button class="btn btn-icon" @click="changeNameMarginBottom(1)" :disabled="(cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) >= 40" title="Zvětšit">+</button>
+              <button class="btn btn-icon" @click="cv.nameMarginBottom = 7" title="Reset na výchozí (7 px)" style="font-size: 10px; padding: 2px 5px;">7px</button>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group" style="margin-top: 10px;">
-          <label style="display: flex; justify-content: space-between; align-items: center;">
-            <span>Mezera pod jménem (nad údaji)</span>
-            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7 }} px</span>
-          </label>
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <button class="btn btn-icon" @click="changeNameMarginBottom(-1)" :disabled="(cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) <= 0" title="Zmenšit">-</button>
-            <input
-              type="range"
-              min="0"
-              max="40"
-              step="1"
-              :value="cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7"
-              @input="cv.nameMarginBottom = Number($event.target.value)"
-              style="flex: 1; accent-color: #2563eb;"
-            >
-            <button class="btn btn-icon" @click="changeNameMarginBottom(1)" :disabled="(cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) >= 40" title="Zvětšit">+</button>
-            <button class="btn btn-icon" @click="cv.nameMarginBottom = 7" title="Reset na výchozí (7 px)" style="font-size: 10px; padding: 2px 5px;">7px</button>
-          </div>
-        </div>
-
-        <div class="form-group" style="margin-top: 10px;">
-          <label style="display: flex; justify-content: space-between; align-items: center;">
-            <span>Modrý prostor pod údaji</span>
-            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22 }} px</span>
-          </label>
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <button class="btn btn-icon" @click="changeHeaderPaddingBottom(-2)" :disabled="(cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) <= 0" title="Zmenšit">-</button>
-            <input
-              type="range"
-              min="0"
-              max="70"
-              step="2"
-              :value="cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22"
-              @input="cv.headerPaddingBottom = Number($event.target.value)"
-              style="flex: 1; accent-color: #2563eb;"
-            >
-            <button class="btn btn-icon" @click="changeHeaderPaddingBottom(2)" :disabled="(cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) >= 70" title="Zvětšit">+</button>
-            <button class="btn btn-icon" @click="cv.headerPaddingBottom = 22" title="Reset na výchozí (22 px)" style="font-size: 10px; padding: 2px 5px;">22px</button>
+          <div class="form-group" style="margin-top: 10px;">
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Modrý prostor pod údaji</span>
+              <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22 }} px</span>
+            </label>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button class="btn btn-icon" @click="changeHeaderPaddingBottom(-2)" :disabled="(cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) <= 0" title="Zmenšit">-</button>
+              <input
+                type="range"
+                min="0"
+                max="70"
+                step="2"
+                :value="cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22"
+                @input="cv.headerPaddingBottom = Number($event.target.value)"
+                style="flex: 1; accent-color: #2563eb;"
+              >
+              <button class="btn btn-icon" @click="changeHeaderPaddingBottom(2)" :disabled="(cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) >= 70" title="Zvětšit">+</button>
+              <button class="btn btn-icon" @click="cv.headerPaddingBottom = 22" title="Reset na výchozí (22 px)" style="font-size: 10px; padding: 2px 5px;">22px</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1033,301 +1082,308 @@
         v-for="(secKey, sIdx) in cv.sectionOrder"
         :key="secKey"
         class="form-section"
+        :class="{ 'is-collapsed': isCollapsed(secKey) }"
         draggable="true"
         @dragstart="onSectionDragStart(sIdx, $event)"
         @dragover.prevent
         @drop="onSectionDrop(sIdx)"
       >
-        <div class="section-header-bar">
+        <div class="section-header-bar" style="cursor: pointer;" @click="toggleCollapse(secKey)">
           <div class="section-header-title">
-            <span class="drag-handle" title="Uchopit a přetáhnout sekci">::</span>
+            <span class="drag-handle" title="Uchopit a přetáhnout sekci" @click.stop>::</span>
             <input
               type="text"
               v-model="cv.sectionTitles[secKey]"
               :placeholder="defaultSectionTitles[secKey] || secKey"
               class="section-title-input"
               title="Klikněte pro přejmenování sekce"
+              @click.stop
             >
           </div>
           <div class="order-controls">
-            <label class="split-toggle" :class="{ active: isSplitAt(secKey, null) }">
+            <label class="split-toggle" :class="{ active: isSplitAt(secKey, null) }" @click.stop>
               <input type="checkbox" :checked="isSplitAt(secKey, null)" @change="toggleSplit(secKey, null)">
               Zde zlomit na stranu 2
             </label>
-            <button class="btn btn-icon" :disabled="sIdx === 0" @click="moveSection(sIdx, -1)" title="Posunout nahoru">▲</button>
-            <button class="btn btn-icon" :disabled="sIdx === cv.sectionOrder.length - 1" @click="moveSection(sIdx, 1)" title="Posunout dolů">▼</button>
-            <button v-if="hasAddButton(secKey)" class="btn" style="margin-left: 4px;" @click="addItemBySection(secKey)">{{ secKey === 'skills' ? 'Přidat kategorii' : 'Přidat' }}</button>
+            <button class="btn btn-icon" :disabled="sIdx === 0" @click.stop="moveSection(sIdx, -1)" title="Posunout nahoru">▲</button>
+            <button class="btn btn-icon" :disabled="sIdx === cv.sectionOrder.length - 1" @click.stop="moveSection(sIdx, 1)" title="Posunout dolů">▼</button>
+            <button v-if="hasAddButton(secKey)" class="btn" style="margin-left: 4px;" @click.stop="addItemBySection(secKey)">{{ secKey === 'skills' ? 'Přidat kategorii' : 'Přidat' }}</button>
+            <button class="btn btn-icon collapse-btn" @click.stop="toggleCollapse(secKey)" :title="isCollapsed(secKey) ? 'Rozbalit' : 'Sbalit'">
+              <svg class="chevron-icon" :class="{ 'is-collapsed': isCollapsed(secKey) }" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+            </button>
           </div>
         </div>
 
-        <template v-if="secKey === 'education'">
-          <div
-            v-for="(item, index) in cv.education"
-            :key="'edu-'+index"
-            class="item-card"
-            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
-            draggable="true"
-            @dragstart.stop="onItemDragStart(cv.education, index, $event)"
-            @dragover.prevent
-            @drop.stop="onItemDrop(cv.education, index)"
-          >
-            <div class="item-card-header">
-              <span class="drag-handle">:: Položka {{ index + 1 }}</span>
-              <div class="order-controls">
-                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
-                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
-                  Zlomit odsud na str. 2
-                </label>
-                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.education, index, -1)">▲</button>
-                <button class="btn btn-icon" :disabled="index === cv.education.length - 1" @click="moveItem(cv.education, index, 1)">▼</button>
-                <button class="btn btn-danger btn-icon" @click="removeItem(cv.education, index)">Smazat</button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Škola</label>
-              <input type="text" v-model="item.school">
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Obor</label>
-                <input type="text" v-model="item.field">
-              </div>
-              <div class="form-group">
-                <label>Období</label>
-                <input type="text" v-model="item.period">
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Ukončení / Titul / Stupeň</label>
-              <input type="text" v-model="item.degree">
-            </div>
-          </div>
-        </template>
-
-        <template v-else-if="secKey === 'experience'">
-          <div
-            v-for="(item, index) in cv.experience"
-            :key="'exp-'+index"
-            class="item-card"
-            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
-            draggable="true"
-            @dragstart.stop="onItemDragStart(cv.experience, index, $event)"
-            @dragover.prevent
-            @drop.stop="onItemDrop(cv.experience, index)"
-          >
-            <div class="item-card-header">
-              <span class="drag-handle">:: Položka {{ index + 1 }}</span>
-              <div class="order-controls">
-                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
-                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
-                  Zlomit odsud na str. 2
-                </label>
-                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.experience, index, -1)">▲</button>
-                <button class="btn btn-icon" :disabled="index === cv.experience.length - 1" @click="moveItem(cv.experience, index, 1)">▼</button>
-                <button class="btn btn-danger btn-icon" @click="removeItem(cv.experience, index)">Smazat</button>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Pracovní pozice</label>
-                <input type="text" v-model="item.position">
-              </div>
-              <div class="form-group">
-                <label>Společnost</label>
-                <input type="text" v-model="item.company">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <label>Časové intervaly</label>
-                <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addPeriod(item)">+ Interval</button>
-              </div>
-              <div v-for="(per, pIdx) in getPeriods(item)" :key="'per-'+pIdx" style="display: flex; gap: 4px; margin-bottom: 4px;">
-                <input type="text" v-model="item.periods[pIdx]" placeholder="např. červenec 2024 - srpen 2024 (2 měsíce)">
-                <button class="btn btn-icon" :disabled="pIdx === 0" @click="moveItem(item.periods, pIdx, -1)">▲</button>
-                <button class="btn btn-icon" :disabled="pIdx === item.periods.length - 1" @click="moveItem(item.periods, pIdx, 1)">▼</button>
-                <button class="btn btn-danger btn-icon" :disabled="item.periods.length <= 1" @click="removePeriod(item, pIdx)">X</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Náplň práce</label>
-              <textarea v-model="item.description"></textarea>
-            </div>
-
-            <div class="form-group">
-              <label>Reference (volitelné)</label>
-              <input type="text" v-model="item.reference" placeholder="např. Ing. Petr Novák, CTO, email: petr@firma.cz, tel.: 777 777 777">
-            </div>
-          </div>
-        </template>
-
-        <template v-else-if="secKey === 'languages'">
-          <div
-            v-for="(item, index) in cv.languages"
-            :key="'lang-'+index"
-            class="item-card"
-            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
-            draggable="true"
-            @dragstart.stop="onItemDragStart(cv.languages, index, $event)"
-            @dragover.prevent
-            @drop.stop="onItemDrop(cv.languages, index)"
-          >
-            <div class="item-card-header" style="margin-bottom: 4px;">
-              <span class="drag-handle">:: Jazyk {{ index + 1 }}</span>
-              <div class="order-controls">
-                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
-                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
-                  Zlomit odsud
-                </label>
-                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.languages, index, -1)">▲</button>
-                <button class="btn btn-icon" :disabled="index === cv.languages.length - 1" @click="moveItem(cv.languages, index, 1)">▼</button>
-                <button class="btn btn-danger btn-icon" @click="removeItem(cv.languages, index)">Smazat</button>
-              </div>
-            </div>
-            <div class="form-row">
-              <input type="text" v-model="item.name" placeholder="Jazyk">
-              <input type="text" v-model="item.level" placeholder="Úroveň">
-            </div>
-          </div>
-        </template>
-
-        <template v-else-if="secKey === 'drivingLicenses'">
-          <div
-            v-for="(item, index) in cv.drivingLicenses"
-            :key="'dl-'+index"
-            class="item-card"
-            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
-            draggable="true"
-            @dragstart.stop="onItemDragStart(cv.drivingLicenses, index, $event)"
-            @dragover.prevent
-            @drop.stop="onItemDrop(cv.drivingLicenses, index)"
-          >
-            <div class="item-card-header" style="margin-bottom: 4px;">
-              <span class="drag-handle">:: Skupina {{ index + 1 }}</span>
-              <div class="order-controls">
-                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
-                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
-                  Zlomit odsud
-                </label>
-                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.drivingLicenses, index, -1)">▲</button>
-                <button class="btn btn-icon" :disabled="index === cv.drivingLicenses.length - 1" @click="moveItem(cv.drivingLicenses, index, 1)">▼</button>
-                <button class="btn btn-danger btn-icon" @click="removeItem(cv.drivingLicenses, index)">Smazat</button>
-              </div>
-            </div>
-            <div class="form-row">
-              <input type="text" v-model="item.group" placeholder="Skupina">
-              <input type="text" v-model="item.note" placeholder="Poznámka">
-            </div>
-          </div>
-        </template>
-
-        <template v-else-if="secKey === 'skills'">
-          <div
-            v-for="(cat, cIdx) in cv.skillsCategories"
-            :key="'scat-'+cIdx"
-            class="item-card"
-            :class="{ 'is-split-target': isSplitAt(secKey, cIdx) }"
-            draggable="true"
-            @dragstart.stop="onItemDragStart(cv.skillsCategories, cIdx, $event)"
-            @dragover.prevent
-            @drop.stop="onItemDrop(cv.skillsCategories, cIdx)"
-          >
-            <div class="item-card-header">
-              <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 140px; max-width: 260px;">
-                <span class="drag-handle">::</span>
-                <input type="text" v-model="cat.category" placeholder="Název kategorie (např. Operační systémy)" style="font-weight: 600; padding: 3px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%;">
-              </div>
-              <div class="order-controls">
-                <label class="split-toggle" :class="{ active: isSplitAt(secKey, cIdx) }">
-                  <input type="checkbox" :checked="isSplitAt(secKey, cIdx)" @change="toggleSplit(secKey, cIdx)">
-                  Zlomit odsud
-                </label>
-                <button class="btn btn-icon" :disabled="cIdx === 0" @click="moveItem(cv.skillsCategories, cIdx, -1)">▲</button>
-                <button class="btn btn-icon" :disabled="cIdx === cv.skillsCategories.length - 1" @click="moveItem(cv.skillsCategories, cIdx, 1)">▼</button>
-                <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addItem(cat.items, { name: '', level: '' })">Přidat položku</button>
-                <button class="btn btn-danger btn-icon" @click="removeItem(cv.skillsCategories, cIdx)" title="Smazat kategorii">X</button>
-              </div>
-            </div>
+        <div v-show="!isCollapsed(secKey)">
+          <template v-if="secKey === 'education'">
             <div
-              v-for="(item, iIdx) in cat.items"
-              :key="'sitem-'+iIdx"
-              class="form-row"
-              style="margin-bottom: 4px; align-items: center;"
+              v-for="(item, index) in cv.education"
+              :key="'edu-'+index"
+              class="item-card"
+              :class="{ 'is-split-target': isSplitAt(secKey, index) }"
               draggable="true"
-              @dragstart.stop="onItemDragStart(cat.items, iIdx, $event)"
+              @dragstart.stop="onItemDragStart(cv.education, index, $event)"
               @dragover.prevent
-              @drop.stop="onItemDrop(cat.items, iIdx)"
+              @drop.stop="onItemDrop(cv.education, index)"
             >
-              <input type="text" v-model="item.name" placeholder="Nástroj / Technologie">
-              <div style="display: flex; gap: 4px;">
-                <input type="text" v-model="item.level" placeholder="Úroveň">
-                <button class="btn btn-icon" :disabled="iIdx === 0" @click="moveItem(cat.items, iIdx, -1)">▲</button>
-                <button class="btn btn-icon" :disabled="iIdx === cat.items.length - 1" @click="moveItem(cat.items, iIdx, 1)">▼</button>
-                <button class="btn btn-danger btn-icon" @click="removeItem(cat.items, iIdx)">X</button>
+              <div class="item-card-header">
+                <span class="drag-handle">:: Položka {{ index + 1 }}</span>
+                <div class="order-controls">
+                  <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                    <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                    Zlomit odsud na str. 2
+                  </label>
+                  <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.education, index, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="index === cv.education.length - 1" @click="moveItem(cv.education, index, 1)">▼</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cv.education, index)">Smazat</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Škola</label>
+                <input type="text" v-model="item.school">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Obor</label>
+                  <input type="text" v-model="item.field">
+                </div>
+                <div class="form-group">
+                  <label>Období</label>
+                  <input type="text" v-model="item.period">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Ukončení / Titul / Stupeň</label>
+                <input type="text" v-model="item.degree">
               </div>
             </div>
-          </div>
-        </template>
+          </template>
 
-        <template v-else-if="secKey === 'certificates'">
-          <div
-            v-for="(item, index) in cv.certificates"
-            :key="'cert-'+index"
-            class="item-card"
-            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
-            draggable="true"
-            @dragstart.stop="onItemDragStart(cv.certificates, index, $event)"
-            @dragover.prevent
-            @drop.stop="onItemDrop(cv.certificates, index)"
-          >
-            <div class="item-card-header">
-              <span class="drag-handle">:: Osvědčení {{ index + 1 }}</span>
-              <div class="order-controls">
-                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
-                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
-                  Zlomit odsud na str. 2
-                </label>
-                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.certificates, index, -1)">▲</button>
-                <button class="btn btn-icon" :disabled="index === cv.certificates.length - 1" @click="moveItem(cv.certificates, index, 1)">▼</button>
-                <button class="btn btn-danger btn-icon" @click="removeItem(cv.certificates, index)">Smazat</button>
+          <template v-else-if="secKey === 'experience'">
+            <div
+              v-for="(item, index) in cv.experience"
+              :key="'exp-'+index"
+              class="item-card"
+              :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+              draggable="true"
+              @dragstart.stop="onItemDragStart(cv.experience, index, $event)"
+              @dragover.prevent
+              @drop.stop="onItemDrop(cv.experience, index)"
+            >
+              <div class="item-card-header">
+                <span class="drag-handle">:: Položka {{ index + 1 }}</span>
+                <div class="order-controls">
+                  <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                    <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                    Zlomit odsud na str. 2
+                  </label>
+                  <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.experience, index, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="index === cv.experience.length - 1" @click="moveItem(cv.experience, index, 1)">▼</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cv.experience, index)">Smazat</button>
+                </div>
               </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Pracovní pozice</label>
+                  <input type="text" v-model="item.position">
+                </div>
+                <div class="form-group">
+                  <label>Společnost</label>
+                  <input type="text" v-model="item.company">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <label>Časové intervaly</label>
+                  <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addPeriod(item)">+ Interval</button>
+                </div>
+                <div v-for="(per, pIdx) in getPeriods(item)" :key="'per-'+pIdx" style="display: flex; gap: 4px; margin-bottom: 4px;">
+                  <input type="text" v-model="item.periods[pIdx]" placeholder="např. červenec 2024 - srpen 2024 (2 měsíce)">
+                  <button class="btn btn-icon" :disabled="pIdx === 0" @click="moveItem(item.periods, pIdx, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="pIdx === item.periods.length - 1" @click="moveItem(item.periods, pIdx, 1)">▼</button>
+                  <button class="btn btn-danger btn-icon" :disabled="item.periods.length <= 1" @click="removePeriod(item, pIdx)">X</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Náplň práce</label>
+                <textarea v-model="item.description"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Reference (volitelné)</label>
+                <input type="text" v-model="item.reference" placeholder="např. Ing. Petr Novák, CTO, email: petr@firma.cz, tel.: 777 777 777">
+              </div>
+            </div>
+          </template>
+
+          <template v-else-if="secKey === 'languages'">
+            <div
+              v-for="(item, index) in cv.languages"
+              :key="'lang-'+index"
+              class="item-card"
+              :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+              draggable="true"
+              @dragstart.stop="onItemDragStart(cv.languages, index, $event)"
+              @dragover.prevent
+              @drop.stop="onItemDrop(cv.languages, index)"
+            >
+              <div class="item-card-header" style="margin-bottom: 4px;">
+                <span class="drag-handle">:: Jazyk {{ index + 1 }}</span>
+                <div class="order-controls">
+                  <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                    <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                    Zlomit odsud
+                  </label>
+                  <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.languages, index, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="index === cv.languages.length - 1" @click="moveItem(cv.languages, index, 1)">▼</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cv.languages, index)">Smazat</button>
+                </div>
+              </div>
+              <div class="form-row">
+                <input type="text" v-model="item.name" placeholder="Jazyk">
+                <input type="text" v-model="item.level" placeholder="Úroveň">
+              </div>
+            </div>
+          </template>
+
+          <template v-else-if="secKey === 'drivingLicenses'">
+            <div
+              v-for="(item, index) in cv.drivingLicenses"
+              :key="'dl-'+index"
+              class="item-card"
+              :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+              draggable="true"
+              @dragstart.stop="onItemDragStart(cv.drivingLicenses, index, $event)"
+              @dragover.prevent
+              @drop.stop="onItemDrop(cv.drivingLicenses, index)"
+            >
+              <div class="item-card-header" style="margin-bottom: 4px;">
+                <span class="drag-handle">:: Skupina {{ index + 1 }}</span>
+                <div class="order-controls">
+                  <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                    <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                    Zlomit odsud
+                  </label>
+                  <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.drivingLicenses, index, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="index === cv.drivingLicenses.length - 1" @click="moveItem(cv.drivingLicenses, index, 1)">▼</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cv.drivingLicenses, index)">Smazat</button>
+                </div>
+              </div>
+              <div class="form-row">
+                <input type="text" v-model="item.group" placeholder="Skupina">
+                <input type="text" v-model="item.note" placeholder="Poznámka">
+              </div>
+            </div>
+          </template>
+
+          <template v-else-if="secKey === 'skills'">
+            <div
+              v-for="(cat, cIdx) in cv.skillsCategories"
+              :key="'scat-'+cIdx"
+              class="item-card"
+              :class="{ 'is-split-target': isSplitAt(secKey, cIdx) }"
+              draggable="true"
+              @dragstart.stop="onItemDragStart(cv.skillsCategories, cIdx, $event)"
+              @dragover.prevent
+              @drop.stop="onItemDrop(cv.skillsCategories, cIdx)"
+            >
+              <div class="item-card-header">
+                <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 140px; max-width: 260px;">
+                  <span class="drag-handle">::</span>
+                  <input type="text" v-model="cat.category" placeholder="Název kategorie (např. Operační systémy)" style="font-weight: 600; padding: 3px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%;">
+                </div>
+                <div class="order-controls">
+                  <label class="split-toggle" :class="{ active: isSplitAt(secKey, cIdx) }">
+                    <input type="checkbox" :checked="isSplitAt(secKey, cIdx)" @change="toggleSplit(secKey, cIdx)">
+                    Zlomit odsud
+                  </label>
+                  <button class="btn btn-icon" :disabled="cIdx === 0" @click="moveItem(cv.skillsCategories, cIdx, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="cIdx === cv.skillsCategories.length - 1" @click="moveItem(cv.skillsCategories, cIdx, 1)">▼</button>
+                  <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addItem(cat.items, { name: '', level: '' })">Přidat položku</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cv.skillsCategories, cIdx)" title="Smazat kategorii">X</button>
+                </div>
+              </div>
+              <div
+                v-for="(item, iIdx) in cat.items"
+                :key="'sitem-'+iIdx"
+                class="form-row"
+                style="margin-bottom: 4px; align-items: center;"
+                draggable="true"
+                @dragstart.stop="onItemDragStart(cat.items, iIdx, $event)"
+                @dragover.prevent
+                @drop.stop="onItemDrop(cat.items, iIdx)"
+              >
+                <input type="text" v-model="item.name" placeholder="Nástroj / Technologie">
+                <div style="display: flex; gap: 4px;">
+                  <input type="text" v-model="item.level" placeholder="Úroveň">
+                  <button class="btn btn-icon" :disabled="iIdx === 0" @click="moveItem(cat.items, iIdx, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="iIdx === cat.items.length - 1" @click="moveItem(cat.items, iIdx, 1)">▼</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cat.items, iIdx)">X</button>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <template v-else-if="secKey === 'certificates'">
+            <div
+              v-for="(item, index) in cv.certificates"
+              :key="'cert-'+index"
+              class="item-card"
+              :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+              draggable="true"
+              @dragstart.stop="onItemDragStart(cv.certificates, index, $event)"
+              @dragover.prevent
+              @drop.stop="onItemDrop(cv.certificates, index)"
+            >
+              <div class="item-card-header">
+                <span class="drag-handle">:: Osvědčení {{ index + 1 }}</span>
+                <div class="order-controls">
+                  <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                    <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                    Zlomit odsud na str. 2
+                  </label>
+                  <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.certificates, index, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="index === cv.certificates.length - 1" @click="moveItem(cv.certificates, index, 1)">▼</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cv.certificates, index)">Smazat</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Název</label>
+                <input type="text" v-model="item.title">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Popis / Rozsah</label>
+                  <input type="text" v-model="item.desc">
+                </div>
+                <div class="form-group">
+                  <label>Datum / Rok</label>
+                  <input type="text" v-model="item.date">
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <template v-else-if="secKey === 'strengths'">
+            <div class="form-group">
+              <label>Silné stránky (jedna na řádek)</label>
+              <textarea v-model="strengthsText"></textarea>
             </div>
             <div class="form-group">
-              <label>Název</label>
-              <input type="text" v-model="item.title">
+              <label>Mohu nabídnout (jedna na řádek)</label>
+              <textarea v-model="offersText"></textarea>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Popis / Rozsah</label>
-                <input type="text" v-model="item.desc">
-              </div>
-              <div class="form-group">
-                <label>Datum / Rok</label>
-                <input type="text" v-model="item.date">
-              </div>
+          </template>
+
+          <template v-else-if="secKey === 'interests'">
+            <div class="form-group">
+              <label>Zájmy</label>
+              <input type="text" v-model="cv.interests">
             </div>
-          </div>
-        </template>
-
-        <template v-else-if="secKey === 'strengths'">
-          <div class="form-group">
-            <label>Silné stránky (jedna na řádek)</label>
-            <textarea v-model="strengthsText"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Mohu nabídnout (jedna na řádek)</label>
-            <textarea v-model="offersText"></textarea>
-          </div>
-        </template>
-
-        <template v-else-if="secKey === 'interests'">
-          <div class="form-group">
-            <label>Zájmy</label>
-            <input type="text" v-model="cv.interests">
-          </div>
-        </template>
+          </template>
+        </div>
       </div>
     </div>
 
@@ -1683,6 +1739,13 @@
 
         const draggedSectionIndex = ref(null);
         const draggedItemInfo = ref(null);
+        const expandedSections = ref({});
+
+        const isCollapsed = (key) => !expandedSections.value[key];
+
+        const toggleCollapse = (key) => {
+          expandedSections.value[key] = !expandedSections.value[key];
+        };
 
         const strengthsText = computed({
           get: () => (cv.value.skillsStrengths || []).join("\n"),
@@ -1960,6 +2023,7 @@
         };
 
         const addItemBySection = (key) => {
+          expandedSections.value[key] = true;
           if (key === "education") addItem(cv.value.education, { school: '', field: '', period: '', degree: '' });
           if (key === "experience") addItem(cv.value.experience, { position: '', company: '', periods: [''], description: '', reference: '' });
           if (key === "languages") addItem(cv.value.languages, { name: '', level: '' });
@@ -2135,7 +2199,10 @@
           handleImport,
           triggerPhotoSelect,
           handlePhotoUpload,
-          isItemFilled
+          isItemFilled,
+          expandedSections,
+          isCollapsed,
+          toggleCollapse
         };
       }
     }).mount("#app");
