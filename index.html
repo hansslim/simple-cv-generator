@@ -358,6 +358,69 @@
       flex-shrink: 0;
     }
 
+    .print-page.is-single-page {
+      height: auto;
+      min-height: var(--a4-h);
+      overflow: visible;
+    }
+
+    .guide-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      user-select: none;
+      padding: 2px 8px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .guide-toggle:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .guide-toggle input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: #ef4444;
+      margin: 0;
+    }
+
+    .a4-guide-line {
+      position: absolute;
+      top: var(--a4-h);
+      left: -18px;
+      right: -18px;
+      height: 0;
+      border-top: 2px dashed #ef4444;
+      z-index: 100;
+      pointer-events: none;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .a4-guide-badge {
+      position: absolute;
+      right: 12px;
+      top: -11px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      text-transform: uppercase;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
     .sheet-header {
       background: var(--cv-blue);
       color: #ffffff;
@@ -665,6 +728,20 @@
         break-after: page !important;
         display: flex !important;
         flex-direction: column !important;
+      }
+
+      .print-page.is-single-page {
+        height: auto !important;
+        min-height: 297mm !important;
+        max-height: none !important;
+        overflow: visible !important;
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+
+      .a4-guide-line,
+      .a4-guide-badge {
+        display: none !important;
       }
 
       .sheet-header {
@@ -1105,7 +1182,13 @@
     <div class="preview-pane" :style="{ '--preview-zoom': previewZoom }">
       <div class="preview-container">
         <div class="page-indicator">
-          <div>Náhled: <strong>Strana 1</strong> (editovatelný)</div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div>Náhled: <strong>Strana 1</strong> (editovatelný)</div>
+            <label class="guide-toggle" v-if="!renderedPages.page2.length" title="Zobrazit / skrýt hranici 1. strany A4 (297 mm)">
+              <input type="checkbox" v-model="showA4Guide">
+              Vyznačit konec A4
+            </label>
+          </div>
           <div class="scale-control" title="Velikost náhledu v okně (Lupa)">
             <span style="font-size: 11px; color: #64748b; font-weight: 600; margin-right: 2px;">Lupa:</span>
             <button class="btn btn-icon" @click="changePreviewZoom(-0.05)" :disabled="previewZoom <= 0.4">-</button>
@@ -1116,7 +1199,10 @@
           </div>
         </div>
 
-        <div class="print-page" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px' }">
+        <div class="print-page" :class="{ 'is-single-page': !renderedPages.page2.length }" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px' }">
+          <div class="a4-guide-line" v-if="showA4Guide && !renderedPages.page2.length" title="Hranice formátu A4 (297 mm)">
+            <span class="a4-guide-badge">Konec A4 (297 mm)</span>
+          </div>
         <header class="sheet-header" :class="{ 'has-photo': cv.personal.photoPath }">
           <div class="photo-wrapper" v-if="cv.personal.photoPath">
             <img :src="cv.personal.photoPath" alt="Fotografie">
@@ -1400,6 +1486,7 @@
         const cv = ref(JSON.parse(JSON.stringify(emptyTemplate)));
         const fileInput = ref(null);
         const photoInput = ref(null);
+        const showA4Guide = ref(true);
 
         const draggedSectionIndex = ref(null);
         const draggedItemInfo = ref(null);
@@ -1776,6 +1863,7 @@
           contactOrder,
           visibleContacts,
           changePhotoSize,
+          showA4Guide,
           fileInput,
           photoInput,
           strengthsText,
