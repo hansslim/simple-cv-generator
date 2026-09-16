@@ -190,9 +190,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       margin-bottom: 12px;
       border-bottom: 1px solid #f1f5f9;
       padding-bottom: 6px;
+      flex-wrap: wrap;
     }
 
     .section-header-title {
@@ -204,6 +206,34 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .section-title-input {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cv-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 2px 6px;
+      border-radius: 4px;
+      width: auto;
+      max-width: 180px;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .section-title-input:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+
+    .section-title-input:focus {
+      border-color: var(--cv-blue);
+      background: #ffffff;
+      outline: none;
     }
 
     .drag-handle {
@@ -224,20 +254,45 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      margin-left: auto;
+      flex-wrap: nowrap;
     }
 
     .split-toggle {
       font-size: 11px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       cursor: pointer;
       color: #475569;
       font-weight: 600;
+      white-space: nowrap;
+      padding: 3px 8px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      margin-left: 12px;
+      margin-right: 2px;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .split-toggle:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+
+    .split-toggle input[type="checkbox"] {
+      cursor: pointer;
+      margin: 0;
+      accent-color: #0284c7;
     }
 
     .split-toggle.active {
-      color: #0284c7;
+      color: #0369a1;
+      background: #e0f2fe;
+      border-color: #38bdf8;
     }
 
     .form-group {
@@ -340,7 +395,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       margin-bottom: 6px;
+      flex-wrap: wrap;
     }
 
     .print-page {
@@ -925,7 +982,13 @@
         <div class="section-header-bar">
           <div class="section-header-title">
             <span class="drag-handle" title="Uchopit a přetáhnout sekci">::</span>
-            <span>{{ getSectionTitle(secKey) }}</span>
+            <input
+              type="text"
+              v-model="cv.sectionTitles[secKey]"
+              :placeholder="defaultSectionTitles[secKey] || secKey"
+              class="section-title-input"
+              title="Klikněte pro přejmenování sekce"
+            >
           </div>
           <div class="order-controls">
             <label class="split-toggle" :class="{ active: isSplitAt(secKey, null) }">
@@ -934,7 +997,7 @@
             </label>
             <button class="btn btn-icon" :disabled="sIdx === 0" @click="moveSection(sIdx, -1)" title="Posunout nahoru">▲</button>
             <button class="btn btn-icon" :disabled="sIdx === cv.sectionOrder.length - 1" @click="moveSection(sIdx, 1)" title="Posunout dolů">▼</button>
-            <button v-if="hasAddButton(secKey)" class="btn" style="margin-left: 4px;" @click="addItemBySection(secKey)">Přidat</button>
+            <button v-if="hasAddButton(secKey)" class="btn" style="margin-left: 4px;" @click="addItemBySection(secKey)">{{ secKey === 'skills' ? 'Přidat kategorii' : 'Přidat' }}</button>
           </div>
         </div>
 
@@ -1108,7 +1171,10 @@
             @drop.stop="onItemDrop(cv.skillsCategories, cIdx)"
           >
             <div class="item-card-header">
-              <span class="drag-handle">:: <strong>{{ cat.category }}</strong></span>
+              <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 140px; max-width: 260px;">
+                <span class="drag-handle">::</span>
+                <input type="text" v-model="cat.category" placeholder="Název kategorie (např. Operační systémy)" style="font-weight: 600; padding: 3px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%;">
+              </div>
               <div class="order-controls">
                 <label class="split-toggle" :class="{ active: isSplitAt(secKey, cIdx) }">
                   <input type="checkbox" :checked="isSplitAt(secKey, cIdx)" @change="toggleSplit(secKey, cIdx)">
@@ -1117,6 +1183,7 @@
                 <button class="btn btn-icon" :disabled="cIdx === 0" @click="moveItem(cv.skillsCategories, cIdx, -1)">▲</button>
                 <button class="btn btn-icon" :disabled="cIdx === cv.skillsCategories.length - 1" @click="moveItem(cv.skillsCategories, cIdx, 1)">▼</button>
                 <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addItem(cat.items, { name: '', level: '' })">Přidat položku</button>
+                <button class="btn btn-danger btn-icon" @click="removeItem(cv.skillsCategories, cIdx)" title="Smazat kategorii">X</button>
               </div>
             </div>
             <div
@@ -1249,7 +1316,7 @@
             <div class="cv-section">
               <div class="section-label">
                 <span v-html="block.icon"></span>
-                <span>{{ block.title }}</span>
+                <span contenteditable="true" @blur="onSectionTitleEdit(block.type, $event)">{{ block.title }}</span>
               </div>
               <div class="section-content">
                 <div class="photo-spacer" v-if="cv.personal.photoPath && bIdx === 0"></div>
@@ -1334,7 +1401,7 @@
             <div class="cv-section">
               <div class="section-label">
                 <span v-html="block.icon"></span>
-                <span>{{ block.title }}</span>
+                <span contenteditable="true" @blur="onSectionTitleEdit(block.type, $event)">{{ block.title }}</span>
               </div>
               <div class="section-content">
                 <template v-if="block.type === 'education'">
@@ -1423,6 +1490,17 @@
       "interests"
     ];
 
+    const defaultSectionTitles = {
+      education: "Vzdělání",
+      experience: "Praxe",
+      languages: "Jazyky",
+      drivingLicenses: "Řidičský průkaz",
+      skills: "Technické znalosti",
+      certificates: "Kurzy",
+      strengths: "Dovednosti",
+      interests: "Zájmy"
+    };
+
     const defaultContactOrder = ["phone", "email", "city", "birthYear"];
 
     const contactMeta = {
@@ -1474,6 +1552,7 @@
       leftColWidth: 100,
       splitPoint: { section: "certificates", itemIndex: 2 },
       sectionOrder: [...defaultSectionOrder],
+      sectionTitles: { ...defaultSectionTitles },
       education: [],
       experience: [],
       languages: [],
@@ -1564,6 +1643,13 @@
           cv.value[key] = raw.split(',').map(s => s.trim()).filter(Boolean);
         };
 
+        const onSectionTitleEdit = (key, event) => {
+          if (!cv.value.sectionTitles) {
+            cv.value.sectionTitles = { ...defaultSectionTitles };
+          }
+          cv.value.sectionTitles[key] = event.target.innerText.trim();
+        };
+
         const changeScale = (delta) => {
           const nextVal = Math.round((cv.value.scale + delta) * 100) / 100;
           if (nextVal >= 0.7 && nextVal <= 1.4) {
@@ -1638,7 +1724,7 @@
                 const block = {
                   key: secKey,
                   type: 'strengths',
-                  title: 'Dovednosti',
+                  title: getSectionTitle('strengths'),
                   icon: icons.strengths,
                   data: {
                     strengths: cv.value.skillsStrengths,
@@ -1656,7 +1742,7 @@
                 const block = {
                   key: secKey,
                   type: 'interests',
-                  title: 'Zájmy',
+                  title: getSectionTitle('interests'),
                   icon: icons.interests,
                   text: cv.value.interests
                 };
@@ -1732,21 +1818,14 @@
         });
 
         const getSectionTitle = (key) => {
-          const titles = {
-            education: "Vzdělání",
-            experience: "Praxe",
-            languages: "Jazyky",
-            drivingLicenses: "Řidičský průkaz",
-            skills: "Technické znalosti",
-            certificates: "Kurzy",
-            strengths: "Dovednosti",
-            interests: "Zájmy"
-          };
-          return titles[key] || key;
+          if (cv.value && cv.value.sectionTitles && cv.value.sectionTitles[key] !== undefined && cv.value.sectionTitles[key] !== "") {
+            return cv.value.sectionTitles[key];
+          }
+          return defaultSectionTitles[key] || key;
         };
 
         const hasAddButton = (key) => {
-          return ["education", "experience", "languages", "drivingLicenses", "certificates"].includes(key);
+          return ["education", "experience", "languages", "drivingLicenses", "certificates", "skills"].includes(key);
         };
 
         const addItemBySection = (key) => {
@@ -1755,6 +1834,7 @@
           if (key === "languages") addItem(cv.value.languages, { name: '', level: '' });
           if (key === "drivingLicenses") addItem(cv.value.drivingLicenses, { group: '', note: '' });
           if (key === "certificates") addItem(cv.value.certificates, { title: '', desc: '', date: '' });
+          if (key === "skills") addItem(cv.value.skillsCategories, { category: '', items: [{ name: '', level: '' }] });
         };
 
         const addItem = (arr, template) => {
@@ -1815,6 +1895,7 @@
             leftColWidth: cv.value.leftColWidth || 100,
             splitPoint: cv.value.splitPoint,
             sectionOrder: cv.value.sectionOrder,
+            sectionTitles: cv.value.sectionTitles || { ...defaultSectionTitles },
             education: cv.value.education,
             experience: cv.value.experience,
             languages: cv.value.languages,
@@ -1848,6 +1929,11 @@
             try {
               const parsed = JSON.parse(event.target.result);
               if (!parsed.sectionOrder) parsed.sectionOrder = [...defaultSectionOrder];
+              if (!parsed.sectionTitles) {
+                parsed.sectionTitles = { ...defaultSectionTitles };
+              } else {
+                parsed.sectionTitles = Object.assign({ ...defaultSectionTitles }, parsed.sectionTitles);
+              }
               if (!parsed.personal) parsed.personal = {};
               if (!parsed.personal.contactOrder || !parsed.personal.contactOrder.length) parsed.personal.contactOrder = [...defaultContactOrder];
               if (parsed.personal.photoSize === undefined) parsed.personal.photoSize = 140;
@@ -1861,6 +1947,41 @@
                     exp.periods = exp.period ? [exp.period] : [""];
                   }
                 });
+              }
+              if (parsed.skillsCategories && typeof parsed.skillsCategories === 'object' && !Array.isArray(parsed.skillsCategories)) {
+                const converted = [];
+                for (const [catName, catItems] of Object.entries(parsed.skillsCategories)) {
+                  if (Array.isArray(catItems)) {
+                    const items = catItems.map(item => {
+                      if (typeof item === 'string') return { name: item, level: '' };
+                      if (item && typeof item === 'object') return { name: item.name || '', level: item.level || '' };
+                      return { name: String(item), level: '' };
+                    });
+                    converted.push({ category: catName, items });
+                  }
+                }
+                parsed.skillsCategories = converted;
+              } else if (Array.isArray(parsed.skillsCategories)) {
+                parsed.skillsCategories = parsed.skillsCategories.map(cat => {
+                  if (typeof cat === 'string') {
+                    return { category: cat, items: [] };
+                  }
+                  const items = Array.isArray(cat.items) ? cat.items.map(it => {
+                    if (typeof it === 'string') return { name: it, level: '' };
+                    return { name: it.name || '', level: it.level || '' };
+                  }) : [];
+                  return {
+                    category: cat.category || '',
+                    items
+                  };
+                });
+              } else if (parsed.skills && Array.isArray(parsed.skills)) {
+                parsed.skillsCategories = [
+                  {
+                    category: "Dovednosti",
+                    items: parsed.skills.map(s => (typeof s === 'string' ? { name: s, level: '' } : { name: s.name || '', level: s.level || '' }))
+                  }
+                ];
               }
               cv.value = Object.assign(JSON.parse(JSON.stringify(emptyTemplate)), parsed);
               e.target.value = "";
@@ -1888,6 +2009,7 @@
 
         return {
           cv,
+          defaultSectionTitles,
           presetColors,
           contactMeta,
           contactOrder,
@@ -1902,6 +2024,7 @@
           onInlineEdit,
           onInlinePeriodEdit,
           onInlineArrayEdit,
+          onSectionTitleEdit,
           changeScale,
           resetScale,
           previewZoom,
