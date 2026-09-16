@@ -1412,6 +1412,11 @@
               return;
             }
 
+            if (secKey === 'skills') {
+              const hasSkills = (cv.value.skillsCategories || []).some(cat => cat.items && cat.items.length > 0);
+              if (!hasSkills) return;
+            }
+
             const items = cv.value[secKey === 'skills' ? 'skillsCategories' : secKey] || [];
             if (!items.length) return;
 
