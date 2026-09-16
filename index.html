@@ -361,21 +361,28 @@
     .sheet-header {
       background: var(--cv-blue);
       color: #ffffff;
-      padding: calc(24px * var(--cv-scale)) calc(32px * var(--cv-scale));
-      display: flex;
-      align-items: center;
-      gap: calc(24px * var(--cv-scale));
+      padding: calc(22px * var(--cv-scale)) calc(32px * var(--cv-scale));
+      display: block;
+      position: relative;
       flex-shrink: 0;
+      z-index: 2;
     }
 
     .photo-wrapper {
-      width: calc(90px * var(--cv-scale));
-      height: calc(90px * var(--cv-scale));
+      float: right;
+      width: calc(170px * var(--cv-scale));
+      height: calc(170px * var(--cv-scale));
       border-radius: 50%;
-      border: 3px solid #ffffff;
+      border: 5px solid #ffffff;
       overflow: hidden;
-      flex-shrink: 0;
       background: #ffffff;
+      margin-left: calc(20px * var(--cv-scale));
+      margin-top: calc(-10px * var(--cv-scale));
+      margin-bottom: calc(-48px * var(--cv-scale));
+      shape-outside: circle(50%);
+      shape-margin: calc(12px * var(--cv-scale));
+      position: relative;
+      z-index: 10;
     }
 
     .photo-wrapper img {
@@ -385,7 +392,7 @@
     }
 
     .header-info {
-      flex: 1;
+      display: block;
     }
 
     .header-info h1 {
@@ -398,12 +405,33 @@
     }
 
     .contact-grid {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      column-gap: calc(20px * var(--cv-scale));
-      row-gap: calc(2px * var(--cv-scale));
+      display: block;
       font-size: calc(11.5px * var(--cv-scale));
       font-weight: 400;
+    }
+
+    .contact-row {
+      display: flex;
+      gap: calc(12px * var(--cv-scale));
+      margin-bottom: calc(2.5px * var(--cv-scale));
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .contact-label {
+      min-width: calc(85px * var(--cv-scale));
+      opacity: 0.9;
+    }
+
+    .photo-spacer {
+      float: right;
+      width: calc(140px * var(--cv-scale));
+      height: calc(38px * var(--cv-scale));
+      shape-outside: ellipse(70px 38px at 50% 0%);
+      shape-margin: calc(10px * var(--cv-scale));
+      margin-left: calc(14px * var(--cv-scale));
+      margin-bottom: calc(2px * var(--cv-scale));
+      pointer-events: none;
     }
 
     .page-body {
@@ -450,14 +478,16 @@
       flex: 1;
       border-left: 1px solid var(--cv-line);
       padding-left: calc(14px * var(--cv-scale));
-      display: flex;
-      flex-direction: column;
-      gap: calc(10px * var(--cv-scale));
+      display: block;
     }
 
     .cv-entry-block {
-      display: flex;
-      flex-direction: column;
+      display: block;
+      margin-bottom: calc(10px * var(--cv-scale));
+    }
+
+    .cv-entry-block:last-child {
+      margin-bottom: 0;
     }
 
     .inline-list {
@@ -626,6 +656,21 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         padding-left: calc(18mm * var(--cv-scale)) !important;
+        padding-right: calc(16mm * var(--cv-scale)) !important;
+        display: block !important;
+      }
+
+      .photo-wrapper {
+        float: right !important;
+        position: relative !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        shape-outside: circle(50%) !important;
+      }
+
+      .photo-spacer {
+        float: right !important;
+        shape-outside: ellipse(70px 45px at 50% 0%) !important;
       }
 
       .page-body {
@@ -1025,33 +1070,42 @@
         </div>
 
         <div class="print-page" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor }">
-        <header class="sheet-header">
+        <header class="sheet-header" :class="{ 'has-photo': cv.personal.photoPath }">
           <div class="photo-wrapper" v-if="cv.personal.photoPath">
             <img :src="cv.personal.photoPath" alt="Fotografie">
           </div>
           <div class="header-info">
             <h1 contenteditable="true" @blur="onInlineEdit(cv.personal, 'fullName', $event)">{{ cv.personal.fullName }}</h1>
             <div class="contact-grid">
-              <div>Telefon:</div>
-              <div contenteditable="true" @blur="onInlineEdit(cv.personal, 'phone', $event)">{{ cv.personal.phone }}</div>
-              <div>E-mail:</div>
-              <div contenteditable="true" @blur="onInlineEdit(cv.personal, 'email', $event)">{{ cv.personal.email }}</div>
-              <div>Bydliště:</div>
-              <div contenteditable="true" @blur="onInlineEdit(cv.personal, 'city', $event)">{{ cv.personal.city }}</div>
-              <div>Rok narození:</div>
-              <div contenteditable="true" @blur="onInlineEdit(cv.personal, 'birthYear', $event)">{{ cv.personal.birthYear }}</div>
+              <div class="contact-row">
+                <span class="contact-label">Telefon:</span>
+                <span contenteditable="true" @blur="onInlineEdit(cv.personal, 'phone', $event)">{{ cv.personal.phone }}</span>
+              </div>
+              <div class="contact-row">
+                <span class="contact-label">E-mail:</span>
+                <span contenteditable="true" @blur="onInlineEdit(cv.personal, 'email', $event)">{{ cv.personal.email }}</span>
+              </div>
+              <div class="contact-row">
+                <span class="contact-label">Bydliště:</span>
+                <span contenteditable="true" @blur="onInlineEdit(cv.personal, 'city', $event)">{{ cv.personal.city }}</span>
+              </div>
+              <div class="contact-row">
+                <span class="contact-label">Rok narození:</span>
+                <span contenteditable="true" @blur="onInlineEdit(cv.personal, 'birthYear', $event)">{{ cv.personal.birthYear }}</span>
+              </div>
             </div>
           </div>
         </header>
 
         <main class="page-body">
-          <template v-for="block in renderedPages.page1" :key="'p1-'+block.key">
+          <template v-for="(block, bIdx) in renderedPages.page1" :key="'p1-'+block.key">
             <div class="cv-section">
               <div class="section-label">
                 <span v-html="block.icon"></span>
                 <span>{{ block.title }}</span>
               </div>
               <div class="section-content">
+                <div class="photo-spacer" v-if="cv.personal.photoPath && bIdx === 0"></div>
                 <template v-if="block.type === 'education'">
                   <div v-for="(item, idx) in block.items" :key="'edu-'+idx" class="cv-entry-block">
                     <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'school', $event)">{{ item.school }}</div>
