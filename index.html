@@ -361,7 +361,7 @@
     .sheet-header {
       background: var(--cv-blue);
       color: #ffffff;
-      padding: calc(22px * var(--cv-scale)) calc(32px * var(--cv-scale));
+      padding: calc(10px * var(--cv-scale)) calc(32px * var(--cv-scale)) calc(13px * var(--cv-scale));
       display: block;
       position: relative;
       flex-shrink: 0;
@@ -370,15 +370,15 @@
 
     .photo-wrapper {
       float: right;
-      width: calc(170px * var(--cv-scale));
-      height: calc(170px * var(--cv-scale));
+      width: calc(var(--photo-size, 140px) * var(--cv-scale));
+      height: calc(var(--photo-size, 140px) * var(--cv-scale));
       border-radius: 50%;
-      border: 5px solid #ffffff;
+      border: 4px solid #ffffff;
       overflow: hidden;
       background: #ffffff;
       margin-left: calc(20px * var(--cv-scale));
-      margin-top: calc(-10px * var(--cv-scale));
-      margin-bottom: calc(-48px * var(--cv-scale));
+      margin-top: calc(4px * var(--cv-scale));
+      margin-bottom: calc(-1 * var(--photo-size, 140px) * 0.7 * var(--cv-scale));
       shape-outside: circle(50%);
       shape-margin: calc(12px * var(--cv-scale));
       position: relative;
@@ -399,38 +399,53 @@
       font-size: calc(26px * var(--cv-scale));
       font-weight: 700;
       letter-spacing: -0.2px;
-      margin-bottom: calc(6px * var(--cv-scale));
+      margin-bottom: calc(7px * var(--cv-scale));
       color: #ffffff;
       line-height: 1.2;
     }
 
     .contact-grid {
-      display: block;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, auto));
+      column-gap: calc(28px * var(--cv-scale));
+      row-gap: calc(3.5px * var(--cv-scale));
       font-size: calc(11.5px * var(--cv-scale));
-      font-weight: 400;
-    }
-
-    .contact-row {
-      display: flex;
-      gap: calc(12px * var(--cv-scale));
-      margin-bottom: calc(2.5px * var(--cv-scale));
+      font-weight: 600;
       width: fit-content;
       max-width: 100%;
     }
 
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: calc(6px * var(--cv-scale));
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .contact-icon {
+      width: calc(13px * var(--cv-scale));
+      height: calc(13px * var(--cv-scale));
+      fill: #ffffff;
+      opacity: 0.95;
+      flex-shrink: 0;
+      display: inline-flex;
+    }
+
     .contact-label {
-      min-width: calc(85px * var(--cv-scale));
       opacity: 0.9;
+      font-weight: 600;
+      margin-right: calc(1px * var(--cv-scale));
     }
 
     .photo-spacer {
       float: right;
-      width: calc(140px * var(--cv-scale));
-      height: calc(38px * var(--cv-scale));
-      shape-outside: ellipse(70px 38px at 50% 0%);
+      width: calc(var(--photo-size, 140px) * 0.9 * var(--cv-scale));
+      height: calc(var(--photo-size, 140px) * 0.45 * var(--cv-scale));
+      shape-outside: ellipse(50% 100% at 50% 0%);
       shape-margin: calc(10px * var(--cv-scale));
       margin-left: calc(14px * var(--cv-scale));
-      margin-bottom: calc(2px * var(--cv-scale));
+      margin-bottom: calc(4px * var(--cv-scale));
       pointer-events: none;
     }
 
@@ -670,7 +685,13 @@
 
       .photo-spacer {
         float: right !important;
-        shape-outside: ellipse(70px 45px at 50% 0%) !important;
+        shape-outside: ellipse(75px 65px at 50% 0%) !important;
+      }
+
+      .contact-icon {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        fill: #ffffff !important;
       }
 
       .page-body {
@@ -696,7 +717,7 @@
 
         <div class="scale-control" title="Velikost písma a měřítko dokumentu">
           <button class="btn btn-icon" @click="changeScale(-0.05)" :disabled="cv.scale <= 0.7">-</button>
-          <span class="scale-label" @dblclick="resetScale" title="Dvojklik pro reset na 100%">{{ Math.round(cv.scale * 100) }} %</span>
+          <span class="scale-label" @dblclick="resetScale" title="Dvojklik pro reset měřítka">{{ Math.round(cv.scale * 100) }} %</span>
           <button class="btn btn-icon" @click="changeScale(0.05)" :disabled="cv.scale >= 1.4">+</button>
         </div>
       </div>
@@ -705,43 +726,69 @@
         <div class="section-header-bar">
           <span class="section-header-title">Osobní údaje</span>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Jméno a příjmení</label>
-            <input type="text" v-model="cv.personal.fullName">
-          </div>
-          <div class="form-group">
-            <label>Telefon</label>
-            <input type="text" v-model="cv.personal.phone">
-          </div>
+        <div class="form-group">
+          <label>Jméno a příjmení</label>
+          <input type="text" v-model="cv.personal.fullName">
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>E-mail</label>
-            <input type="email" v-model="cv.personal.email">
-          </div>
-          <div class="form-group">
-            <label>Lokalita / Město</label>
-            <input type="text" v-model="cv.personal.city">
-          </div>
+
+        <div style="margin-top: 12px; margin-bottom: 6px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
+          Kontaktní údaje (pořadí zobrazení ve 2 sloupcích)
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Rok narození</label>
-            <input type="text" v-model="cv.personal.birthYear">
-          </div>
-          <div class="form-group">
-            <label>Fotografie</label>
-            <div style="display: flex; gap: 6px;">
-              <button class="btn" style="flex: 1;" @click="triggerPhotoSelect">Vybrat soubor...</button>
-              <button class="btn btn-danger" v-if="cv.personal.photoPath" @click="cv.personal.photoPath = ''">Smazat</button>
+
+        <div
+          v-for="(fieldKey, fIdx) in contactOrder"
+          :key="'field-'+fieldKey"
+          class="item-card"
+          style="padding: 6px 10px; margin-bottom: 6px;"
+          draggable="true"
+          @dragstart.stop="onItemDragStart(cv.personal.contactOrder, fIdx, $event)"
+          @dragover.prevent
+          @drop.stop="onItemDrop(cv.personal.contactOrder, fIdx)"
+        >
+          <div class="item-card-header" style="margin-bottom: 4px;">
+            <span class="drag-handle" style="font-size: 11px; display: inline-flex; align-items: center; gap: 4px;">
+              <span v-html="contactMeta[fieldKey].icon" style="display: inline-flex; width: 13px; height: 13px; fill: #64748b;"></span>
+              {{ contactMeta[fieldKey].label }}
+            </span>
+            <div class="order-controls">
+              <button class="btn btn-icon" :disabled="fIdx === 0" @click="moveItem(cv.personal.contactOrder, fIdx, -1)">▲</button>
+              <button class="btn btn-icon" :disabled="fIdx === cv.personal.contactOrder.length - 1" @click="moveItem(cv.personal.contactOrder, fIdx, 1)">▼</button>
             </div>
-            <input type="file" ref="photoInput" class="hidden-input" accept="image/*" @change="handlePhotoUpload">
           </div>
+          <input type="text" v-model="cv.personal[fieldKey]" :placeholder="contactMeta[fieldKey].label">
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label>Fotografie</label>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn" style="flex: 1;" @click="triggerPhotoSelect">Vybrat soubor...</button>
+            <button class="btn btn-danger" v-if="cv.personal.photoPath" @click="cv.personal.photoPath = ''">Smazat</button>
+          </div>
+          <input type="file" ref="photoInput" class="hidden-input" accept="image/*" @change="handlePhotoUpload">
         </div>
         <div class="form-group" style="margin-top: 6px;">
           <label>Cesta k souboru fotografie (nebo URL)</label>
           <input type="text" v-model="cv.personal.photoPath" placeholder="Cesta nebo datová URI">
+        </div>
+        <div class="form-group" style="margin-top: 6px;" v-if="cv.personal.photoPath">
+          <label style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Velikost fotografie</span>
+            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.personal.photoSize || 140 }} px</span>
+          </label>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button class="btn btn-icon" @click="changePhotoSize(-5)" :disabled="(cv.personal.photoSize || 140) <= 80" title="Zmenšit">-</button>
+            <input
+              type="range"
+              min="80"
+              max="220"
+              step="5"
+              :value="cv.personal.photoSize || 140"
+              @input="cv.personal.photoSize = Number($event.target.value)"
+              style="flex: 1; accent-color: #2563eb;"
+            >
+            <button class="btn btn-icon" @click="changePhotoSize(5)" :disabled="(cv.personal.photoSize || 140) >= 220" title="Zvětšit">+</button>
+            <button class="btn btn-icon" @click="cv.personal.photoSize = 140" title="Reset na výchozí velikost (140 px)" style="font-size: 10px; padding: 2px 5px;">140px</button>
+          </div>
         </div>
 
         <div class="form-group" style="margin-top: 10px;">
@@ -1069,29 +1116,22 @@
           </div>
         </div>
 
-        <div class="print-page" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor }">
+        <div class="print-page" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px' }">
         <header class="sheet-header" :class="{ 'has-photo': cv.personal.photoPath }">
           <div class="photo-wrapper" v-if="cv.personal.photoPath">
             <img :src="cv.personal.photoPath" alt="Fotografie">
           </div>
           <div class="header-info">
             <h1 contenteditable="true" @blur="onInlineEdit(cv.personal, 'fullName', $event)">{{ cv.personal.fullName }}</h1>
-            <div class="contact-grid">
-              <div class="contact-row">
-                <span class="contact-label">Telefon:</span>
-                <span contenteditable="true" @blur="onInlineEdit(cv.personal, 'phone', $event)">{{ cv.personal.phone }}</span>
-              </div>
-              <div class="contact-row">
-                <span class="contact-label">E-mail:</span>
-                <span contenteditable="true" @blur="onInlineEdit(cv.personal, 'email', $event)">{{ cv.personal.email }}</span>
-              </div>
-              <div class="contact-row">
-                <span class="contact-label">Bydliště:</span>
-                <span contenteditable="true" @blur="onInlineEdit(cv.personal, 'city', $event)">{{ cv.personal.city }}</span>
-              </div>
-              <div class="contact-row">
-                <span class="contact-label">Rok narození:</span>
-                <span contenteditable="true" @blur="onInlineEdit(cv.personal, 'birthYear', $event)">{{ cv.personal.birthYear }}</span>
+            <div class="contact-grid" v-if="visibleContacts.length">
+              <div
+                v-for="fieldKey in visibleContacts"
+                :key="'prev-c-'+fieldKey"
+                class="contact-row"
+              >
+                <span class="contact-icon" v-html="contactMeta[fieldKey].icon"></span>
+                <span class="contact-label">{{ contactMeta[fieldKey].label }}</span>
+                <span contenteditable="true" @blur="onInlineEdit(cv.personal, fieldKey, $event)">{{ cv.personal[fieldKey] }}</span>
               </div>
             </div>
           </div>
@@ -1122,13 +1162,13 @@
                     <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'position', $event)">{{ item.position }}</div>
                     <div class="entry-subtitle" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
                     <div class="entry-period" v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
-                    <div class="entry-desc" v-if="item.description || true" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
+                    <div class="entry-desc" v-if="item.description" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
                   </div>
                 </template>
                 <template v-else-if="block.type === 'languages'">
                   <div class="inline-list">
                     <span v-for="(item, idx) in block.items" :key="'lang-'+idx" class="inline-item">
-                      <strong contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong>: <span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
+                      <strong contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong><span v-if="item.level">&nbsp;(<span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>)</span>
                     </span>
                   </div>
                 </template>
@@ -1154,8 +1194,8 @@
                 <template v-else-if="block.type === 'certificates'">
                   <div v-for="(item, idx) in block.items" :key="'cert-'+idx" class="cv-entry-block">
                     <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'title', $event)">{{ item.title }}</div>
-                    <div class="entry-desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
-                    <div class="entry-period" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
+                    <div class="entry-desc" v-if="item.desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
+                    <div class="entry-period" v-if="item.date" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
                   </div>
                 </template>
                 <template v-else-if="block.type === 'strengths'">
@@ -1181,7 +1221,7 @@
         <div>Náhled: <strong>Strana 2</strong> (texty můžete upravovat přímo zde)</div>
       </div>
 
-      <div class="print-page" v-if="renderedPages.page2.length" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor }">
+      <div class="print-page" v-if="renderedPages.page2.length" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px' }">
         <main class="page-body page-body-subsequent">
           <template v-for="block in renderedPages.page2" :key="'p2-'+block.key">
             <div class="cv-section">
@@ -1206,13 +1246,13 @@
                     <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'position', $event)">{{ item.position }}</div>
                     <div class="entry-subtitle" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
                     <div class="entry-period" v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
-                    <div class="entry-desc" v-if="item.description || true" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
+                    <div class="entry-desc" v-if="item.description" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
                   </div>
                 </template>
                 <template v-else-if="block.type === 'languages'">
                   <div class="inline-list">
                     <span v-for="(item, idx) in block.items" :key="'lang-'+idx" class="inline-item">
-                      <strong contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong>: <span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
+                      <strong contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong><span v-if="item.level">&nbsp;(<span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>)</span>
                     </span>
                   </div>
                 </template>
@@ -1238,8 +1278,8 @@
                 <template v-else-if="block.type === 'certificates'">
                   <div v-for="(item, idx) in block.items" :key="'cert-'+idx" class="cv-entry-block">
                     <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'title', $event)">{{ item.title }}</div>
-                    <div class="entry-desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
-                    <div class="entry-period" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
+                    <div class="entry-desc" v-if="item.desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
+                    <div class="entry-period" v-if="item.date" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
                   </div>
                 </template>
                 <template v-else-if="block.type === 'strengths'">
@@ -1276,6 +1316,31 @@
       "interests"
     ];
 
+    const defaultContactOrder = ["phone", "email", "city", "birthYear"];
+
+    const contactMeta = {
+      phone: {
+        key: "phone",
+        label: "Telefon",
+        icon: '<svg class="contact-icon" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>'
+      },
+      email: {
+        key: "email",
+        label: "E-mail",
+        icon: '<svg class="contact-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'
+      },
+      city: {
+        key: "city",
+        label: "Bydliště",
+        icon: '<svg class="contact-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>'
+      },
+      birthYear: {
+        key: "birthYear",
+        label: "Rok narození",
+        icon: '<svg class="contact-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>'
+      }
+    };
+
     const presetColors = [
       "#005aa0",
       "#0f2d59",
@@ -1293,10 +1358,12 @@
         birthYear: "",
         email: "",
         city: "",
-        photoPath: ""
+        photoPath: "",
+        photoSize: 140,
+        contactOrder: [...defaultContactOrder]
       },
       primaryColor: "#005aa0",
-      scale: 1,
+      scale: 1.2,
       splitPoint: { section: "certificates", itemIndex: 2 },
       sectionOrder: [...defaultSectionOrder],
       education: [],
@@ -1351,6 +1418,23 @@
           }
         });
 
+        const contactOrder = computed(() => {
+          if (!cv.value.personal.contactOrder || !cv.value.personal.contactOrder.length) {
+            cv.value.personal.contactOrder = [...defaultContactOrder];
+          }
+          return cv.value.personal.contactOrder;
+        });
+
+        const visibleContacts = computed(() => {
+          return contactOrder.value.filter(k => cv.value.personal[k] && String(cv.value.personal[k]).trim() !== '');
+        });
+
+        const changePhotoSize = (delta) => {
+          const current = cv.value.personal.photoSize || 140;
+          const nextVal = Math.min(220, Math.max(80, current + delta));
+          cv.value.personal.photoSize = nextVal;
+        };
+
         const onInlineEdit = (targetObj, key, event) => {
           targetObj[key] = event.target.innerText.trim();
         };
@@ -1373,7 +1457,7 @@
         };
 
         const resetScale = () => {
-          cv.value.scale = 1;
+          cv.value.scale = 1.2;
         };
 
         const previewZoom = ref(0.75);
@@ -1648,8 +1732,11 @@
             try {
               const parsed = JSON.parse(event.target.result);
               if (!parsed.sectionOrder) parsed.sectionOrder = [...defaultSectionOrder];
+              if (!parsed.personal) parsed.personal = {};
+              if (!parsed.personal.contactOrder || !parsed.personal.contactOrder.length) parsed.personal.contactOrder = [...defaultContactOrder];
+              if (parsed.personal.photoSize === undefined) parsed.personal.photoSize = 140;
               if (parsed.splitPoint === undefined) parsed.splitPoint = { section: "certificates", itemIndex: 2 };
-              if (parsed.scale === undefined) parsed.scale = 1;
+              if (parsed.scale === undefined) parsed.scale = 1.2;
               if (parsed.primaryColor === undefined) parsed.primaryColor = "#005aa0";
               if (parsed.experience) {
                 parsed.experience.forEach(exp => {
@@ -1685,6 +1772,10 @@
         return {
           cv,
           presetColors,
+          contactMeta,
+          contactOrder,
+          visibleContacts,
+          changePhotoSize,
           fileInput,
           photoInput,
           strengthsText,
