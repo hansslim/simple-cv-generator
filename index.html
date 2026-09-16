@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor CV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    :root {
+      --cv-blue: #005aa0;
+      --cv-dark: #1a1a1a;
+      --cv-gray: #555555;
+      --cv-light-gray: #777777;
+      --cv-line: #dcdcdc;
+      --a4-w: 210mm;
+      --a4-h: 297mm;
+      --cv-scale: 1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+      background-color: #4b5563;
+      color: var(--cv-dark);
+      line-height: 1.35;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .editor-pane {
+      width: 44%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 24px;
+      background: #f8fafc;
+      border-right: 1px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .preview-pane {
+      width: 56%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 30px;
+      background: #475569;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #cbd5e1;
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      z-index: 20;
+    }
+
+    .btn {
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--cv-blue);
+      border-color: var(--cv-blue);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(0.9);
+    }
+
+    .btn-danger {
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+
+    .btn-danger:hover {
+      background: #fee2e2;
+    }
+
+    .btn-icon {
+      padding: 3px 7px;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .scale-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 2px 4px;
+      margin-left: auto;
+    }
+
+    .scale-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      min-width: 42px;
+      text-align: center;
+      user-select: none;
+    }
+
+    .hidden-input {
+      display: none;
+    }
+
+    .page-indicator {
+      width: 100%;
+      max-width: var(--a4-w);
+      padding: 8px 16px;
+      background: #ffffff;
+      border-radius: 4px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .form-section {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .section-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 6px;
+    }
+
+    .section-header-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cv-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: #94a3b8;
+      font-size: 13px;
+      user-select: none;
+      padding: 0 4px;
+      font-family: monospace;
+      font-weight: bold;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .order-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .split-toggle {
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .split-toggle.active {
+      color: #0284c7;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .color-picker-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .color-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px #cbd5e1;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.15s;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.15);
+    }
+
+    .color-swatch.active {
+      box-shadow: 0 0 0 2px #0f172a;
+    }
+
+    .color-input-custom {
+      -webkit-appearance: none;
+      border: 1px solid #cbd5e1;
+      width: 30px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 0;
+      background: none;
+    }
+
+    .color-input-custom::-webkit-color-swatch-wrapper {
+      padding: 1px;
+    }
+
+    .color-input-custom::-webkit-color-swatch {
+      border: none;
+      border-radius: 2px;
+    }
+
+    label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 12.5px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #ffffff;
+      font-family: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 44px;
+    }
+
+    .item-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .item-card.is-split-target {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+
+    .item-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .print-page {
+      width: var(--a4-w);
+      min-height: var(--a4-h);
+      height: var(--a4-h);
+      background: #ffffff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .sheet-header {
+      background: var(--cv-blue);
+      color: #ffffff;
+      padding: calc(24px * var(--cv-scale)) calc(32px * var(--cv-scale));
+      display: flex;
+      align-items: center;
+      gap: calc(24px * var(--cv-scale));
+      flex-shrink: 0;
+    }
+
+    .photo-wrapper {
+      width: calc(90px * var(--cv-scale));
+      height: calc(90px * var(--cv-scale));
+      border-radius: 50%;
+      border: 3px solid #ffffff;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #ffffff;
+    }
+
+    .photo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .header-info {
+      flex: 1;
+    }
+
+    .header-info h1 {
+      font-size: calc(26px * var(--cv-scale));
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      margin-bottom: calc(6px * var(--cv-scale));
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: calc(20px * var(--cv-scale));
+      row-gap: calc(2px * var(--cv-scale));
+      font-size: calc(11.5px * var(--cv-scale));
+      font-weight: 400;
+    }
+
+    .page-body {
+      padding: calc(20px * var(--cv-scale)) calc(25px * var(--cv-scale)) calc(25px * var(--cv-scale)) calc(32px * var(--cv-scale));
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+    }
+
+    .page-body-subsequent {
+      padding-top: calc(10mm * var(--cv-scale)) !important;
+    }
+
+    .cv-section {
+      display: flex;
+      margin-bottom: calc(16px * var(--cv-scale));
+    }
+
+    .section-label {
+      width: calc(115px * var(--cv-scale));
+      flex-shrink: 0;
+      font-weight: 700;
+      color: var(--cv-dark);
+      text-align: left;
+      padding-right: calc(14px * var(--cv-scale));
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: calc(6px * var(--cv-scale));
+      font-size: calc(12px * var(--cv-scale));
+      line-height: 1.3;
+    }
+
+    .section-icon {
+      width: calc(14px * var(--cv-scale));
+      height: calc(14px * var(--cv-scale));
+      fill: #444444;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .section-content {
+      flex: 1;
+      border-left: 1px solid var(--cv-line);
+      padding-left: calc(14px * var(--cv-scale));
+      display: flex;
+      flex-direction: column;
+      gap: calc(10px * var(--cv-scale));
+    }
+
+    .cv-entry-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inline-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: calc(8px * var(--cv-scale)) calc(16px * var(--cv-scale));
+    }
+
+    .inline-item {
+      font-size: calc(11.5px * var(--cv-scale));
+      color: #333333;
+      white-space: nowrap;
+    }
+
+    .entry-title {
+      font-weight: 700;
+      color: var(--cv-dark);
+      font-size: calc(12.5px * var(--cv-scale));
+    }
+
+    .entry-subtitle {
+      color: var(--cv-blue);
+      font-weight: 600;
+      font-size: calc(12px * var(--cv-scale));
+    }
+
+    .entry-period {
+      color: var(--cv-light-gray);
+      font-size: calc(11px * var(--cv-scale));
+      margin-top: 1px;
+      margin-bottom: 2px;
+    }
+
+    .entry-desc {
+      color: #333333;
+      white-space: pre-line;
+      font-size: calc(11.5px * var(--cv-scale));
+      line-height: 1.4;
+    }
+
+    .sub-category-block {
+      margin-bottom: calc(6px * var(--cv-scale));
+    }
+
+    .sub-category-title {
+      font-weight: 700;
+      color: var(--cv-dark);
+      margin-bottom: 2px;
+      font-size: calc(12px * var(--cv-scale));
+    }
+
+    .sub-item-line {
+      font-size: calc(11.5px * var(--cv-scale));
+      color: #333333;
+      line-height: 1.4;
+    }
+
+    [contenteditable="true"] {
+      outline: none;
+      border-radius: 2px;
+      transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    [contenteditable="true"]:hover {
+      background-color: rgba(2, 132, 199, 0.08);
+      cursor: text;
+    }
+
+    [contenteditable="true"]:focus {
+      background-color: rgba(2, 132, 199, 0.14);
+      box-shadow: 0 0 0 1px rgba(2, 132, 199, 0.5);
+    }
+
+    .sheet-header [contenteditable="true"]:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sheet-header [contenteditable="true"]:focus {
+      background-color: rgba(255, 255, 255, 0.28);
+      box-shadow: 0 0 0 1px #ffffff;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+
+      html, body {
+        width: 100% !important;
+        height: auto !important;
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+
+      #app {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+
+      .editor-pane,
+      .action-bar,
+      .page-indicator {
+        display: none !important;
+      }
+
+      .preview-pane {
+        display: block !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+
+      .print-page {
+        box-shadow: none !important;
+        width: 100% !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        overflow: hidden !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      .sheet-header {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        padding-left: calc(18mm * var(--cv-scale)) !important;
+      }
+
+      .page-body {
+        padding-left: calc(18mm * var(--cv-scale)) !important;
+        padding-right: calc(16mm * var(--cv-scale)) !important;
+      }
+
+      [contenteditable="true"] {
+        background: none !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="editor-pane">
+      <div class="action-bar">
+        <button class="btn btn-primary" @click="triggerPrint">Tisk do PDF</button>
+        <button class="btn" @click="exportJson">Export JSON</button>
+        <button class="btn" @click="triggerImport">Import JSON</button>
+        <input type="file" ref="fileInput" class="hidden-input" accept=".json" @change="handleImport">
+
+        <div class="scale-control" title="Velikost písma a měřítko dokumentu">
+          <button class="btn btn-icon" @click="changeScale(-0.05)" :disabled="cv.scale <= 0.7">-</button>
+          <span class="scale-label" @dblclick="resetScale" title="Dvojklik pro reset na 100%">{{ Math.round(cv.scale * 100) }} %</span>
+          <button class="btn btn-icon" @click="changeScale(0.05)" :disabled="cv.scale >= 1.4">+</button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-header-bar">
+          <span class="section-header-title">Osobní údaje</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Jméno a příjmení</label>
+            <input type="text" v-model="cv.personal.fullName">
+          </div>
+          <div class="form-group">
+            <label>Telefon</label>
+            <input type="text" v-model="cv.personal.phone">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" v-model="cv.personal.email">
+          </div>
+          <div class="form-group">
+            <label>Lokalita / Město</label>
+            <input type="text" v-model="cv.personal.city">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Rok narození</label>
+            <input type="text" v-model="cv.personal.birthYear">
+          </div>
+          <div class="form-group">
+            <label>Fotografie</label>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn" style="flex: 1;" @click="triggerPhotoSelect">Vybrat soubor...</button>
+              <button class="btn btn-danger" v-if="cv.personal.photoPath" @click="cv.personal.photoPath = ''">Smazat</button>
+            </div>
+            <input type="file" ref="photoInput" class="hidden-input" accept="image/*" @change="handlePhotoUpload">
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 6px;">
+          <label>Cesta k souboru fotografie (nebo URL)</label>
+          <input type="text" v-model="cv.personal.photoPath" placeholder="Cesta nebo datová URI">
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label>Barva záhlaví a prvků</label>
+          <div class="color-picker-row">
+            <button
+              v-for="color in presetColors"
+              :key="color"
+              type="button"
+              class="color-swatch"
+              :class="{ active: cv.primaryColor.toLowerCase() === color.toLowerCase() }"
+              :style="{ backgroundColor: color }"
+              @click="cv.primaryColor = color"
+              :title="color"
+            ></button>
+            <input
+              type="color"
+              v-model="cv.primaryColor"
+              class="color-input-custom"
+              title="Vlastní barva"
+            >
+            <span style="font-size: 11px; color: #64748b; font-family: monospace;">{{ cv.primaryColor }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        v-for="(secKey, sIdx) in cv.sectionOrder"
+        :key="secKey"
+        class="form-section"
+        draggable="true"
+        @dragstart="onSectionDragStart(sIdx, $event)"
+        @dragover.prevent
+        @drop="onSectionDrop(sIdx)"
+      >
+        <div class="section-header-bar">
+          <div class="section-header-title">
+            <span class="drag-handle" title="Uchopit a přetáhnout sekci">::</span>
+            <span>{{ getSectionTitle(secKey) }}</span>
+          </div>
+          <div class="order-controls">
+            <label class="split-toggle" :class="{ active: isSplitAt(secKey, null) }">
+              <input type="checkbox" :checked="isSplitAt(secKey, null)" @change="toggleSplit(secKey, null)">
+              Zde zlomit na stranu 2
+            </label>
+            <button class="btn btn-icon" :disabled="sIdx === 0" @click="moveSection(sIdx, -1)" title="Posunout nahoru">▲</button>
+            <button class="btn btn-icon" :disabled="sIdx === cv.sectionOrder.length - 1" @click="moveSection(sIdx, 1)" title="Posunout dolů">▼</button>
+            <button v-if="hasAddButton(secKey)" class="btn" style="margin-left: 4px;" @click="addItemBySection(secKey)">Přidat</button>
+          </div>
+        </div>
+
+        <template v-if="secKey === 'education'">
+          <div
+            v-for="(item, index) in cv.education"
+            :key="'edu-'+index"
+            class="item-card"
+            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+            draggable="true"
+            @dragstart.stop="onItemDragStart(cv.education, index, $event)"
+            @dragover.prevent
+            @drop.stop="onItemDrop(cv.education, index)"
+          >
+            <div class="item-card-header">
+              <span class="drag-handle">:: Položka {{ index + 1 }}</span>
+              <div class="order-controls">
+                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                  Zlomit odsud na str. 2
+                </label>
+                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.education, index, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="index === cv.education.length - 1" @click="moveItem(cv.education, index, 1)">▼</button>
+                <button class="btn btn-danger btn-icon" @click="removeItem(cv.education, index)">Smazat</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Škola</label>
+              <input type="text" v-model="item.school">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Obor</label>
+                <input type="text" v-model="item.field">
+              </div>
+              <div class="form-group">
+                <label>Období</label>
+                <input type="text" v-model="item.period">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Ukončení / Titul / Stupeň</label>
+              <input type="text" v-model="item.degree">
+            </div>
+          </div>
+        </template>
+
+        <template v-else-if="secKey === 'experience'">
+          <div
+            v-for="(item, index) in cv.experience"
+            :key="'exp-'+index"
+            class="item-card"
+            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+            draggable="true"
+            @dragstart.stop="onItemDragStart(cv.experience, index, $event)"
+            @dragover.prevent
+            @drop.stop="onItemDrop(cv.experience, index)"
+          >
+            <div class="item-card-header">
+              <span class="drag-handle">:: Položka {{ index + 1 }}</span>
+              <div class="order-controls">
+                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                  Zlomit odsud na str. 2
+                </label>
+                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.experience, index, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="index === cv.experience.length - 1" @click="moveItem(cv.experience, index, 1)">▼</button>
+                <button class="btn btn-danger btn-icon" @click="removeItem(cv.experience, index)">Smazat</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Pracovní pozice</label>
+                <input type="text" v-model="item.position">
+              </div>
+              <div class="form-group">
+                <label>Společnost</label>
+                <input type="text" v-model="item.company">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label>Časové intervaly</label>
+                <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addPeriod(item)">+ Interval</button>
+              </div>
+              <div v-for="(per, pIdx) in getPeriods(item)" :key="'per-'+pIdx" style="display: flex; gap: 4px; margin-bottom: 4px;">
+                <input type="text" v-model="item.periods[pIdx]" placeholder="např. červenec 2024 - srpen 2024 (2 měsíce)">
+                <button class="btn btn-icon" :disabled="pIdx === 0" @click="moveItem(item.periods, pIdx, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="pIdx === item.periods.length - 1" @click="moveItem(item.periods, pIdx, 1)">▼</button>
+                <button class="btn btn-danger btn-icon" :disabled="item.periods.length <= 1" @click="removePeriod(item, pIdx)">X</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Náplň práce</label>
+              <textarea v-model="item.description"></textarea>
+            </div>
+          </div>
+        </template>
+
+        <template v-else-if="secKey === 'languages'">
+          <div
+            v-for="(item, index) in cv.languages"
+            :key="'lang-'+index"
+            class="item-card"
+            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+            draggable="true"
+            @dragstart.stop="onItemDragStart(cv.languages, index, $event)"
+            @dragover.prevent
+            @drop.stop="onItemDrop(cv.languages, index)"
+          >
+            <div class="item-card-header" style="margin-bottom: 4px;">
+              <span class="drag-handle">:: Jazyk {{ index + 1 }}</span>
+              <div class="order-controls">
+                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                  Zlomit odsud
+                </label>
+                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.languages, index, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="index === cv.languages.length - 1" @click="moveItem(cv.languages, index, 1)">▼</button>
+                <button class="btn btn-danger btn-icon" @click="removeItem(cv.languages, index)">Smazat</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <input type="text" v-model="item.name" placeholder="Jazyk">
+              <input type="text" v-model="item.level" placeholder="Úroveň">
+            </div>
+          </div>
+        </template>
+
+        <template v-else-if="secKey === 'drivingLicenses'">
+          <div
+            v-for="(item, index) in cv.drivingLicenses"
+            :key="'dl-'+index"
+            class="item-card"
+            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+            draggable="true"
+            @dragstart.stop="onItemDragStart(cv.drivingLicenses, index, $event)"
+            @dragover.prevent
+            @drop.stop="onItemDrop(cv.drivingLicenses, index)"
+          >
+            <div class="item-card-header" style="margin-bottom: 4px;">
+              <span class="drag-handle">:: Skupina {{ index + 1 }}</span>
+              <div class="order-controls">
+                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                  Zlomit odsud
+                </label>
+                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.drivingLicenses, index, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="index === cv.drivingLicenses.length - 1" @click="moveItem(cv.drivingLicenses, index, 1)">▼</button>
+                <button class="btn btn-danger btn-icon" @click="removeItem(cv.drivingLicenses, index)">Smazat</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <input type="text" v-model="item.group" placeholder="Skupina">
+              <input type="text" v-model="item.note" placeholder="Poznámka">
+            </div>
+          </div>
+        </template>
+
+        <template v-else-if="secKey === 'skills'">
+          <div
+            v-for="(cat, cIdx) in cv.skillsCategories"
+            :key="'scat-'+cIdx"
+            class="item-card"
+            :class="{ 'is-split-target': isSplitAt(secKey, cIdx) }"
+            draggable="true"
+            @dragstart.stop="onItemDragStart(cv.skillsCategories, cIdx, $event)"
+            @dragover.prevent
+            @drop.stop="onItemDrop(cv.skillsCategories, cIdx)"
+          >
+            <div class="item-card-header">
+              <span class="drag-handle">:: <strong>{{ cat.category }}</strong></span>
+              <div class="order-controls">
+                <label class="split-toggle" :class="{ active: isSplitAt(secKey, cIdx) }">
+                  <input type="checkbox" :checked="isSplitAt(secKey, cIdx)" @change="toggleSplit(secKey, cIdx)">
+                  Zlomit odsud
+                </label>
+                <button class="btn btn-icon" :disabled="cIdx === 0" @click="moveItem(cv.skillsCategories, cIdx, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="cIdx === cv.skillsCategories.length - 1" @click="moveItem(cv.skillsCategories, cIdx, 1)">▼</button>
+                <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addItem(cat.items, { name: '', level: '' })">Přidat položku</button>
+              </div>
+            </div>
+            <div
+              v-for="(item, iIdx) in cat.items"
+              :key="'sitem-'+iIdx"
+              class="form-row"
+              style="margin-bottom: 4px; align-items: center;"
+              draggable="true"
+              @dragstart.stop="onItemDragStart(cat.items, iIdx, $event)"
+              @dragover.prevent
+              @drop.stop="onItemDrop(cat.items, iIdx)"
+            >
+              <input type="text" v-model="item.name" placeholder="Nástroj / Technologie">
+              <div style="display: flex; gap: 4px;">
+                <input type="text" v-model="item.level" placeholder="Úroveň">
+                <button class="btn btn-icon" :disabled="iIdx === 0" @click="moveItem(cat.items, iIdx, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="iIdx === cat.items.length - 1" @click="moveItem(cat.items, iIdx, 1)">▼</button>
+                <button class="btn btn-danger btn-icon" @click="removeItem(cat.items, iIdx)">X</button>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template v-else-if="secKey === 'certificates'">
+          <div
+            v-for="(item, index) in cv.certificates"
+            :key="'cert-'+index"
+            class="item-card"
+            :class="{ 'is-split-target': isSplitAt(secKey, index) }"
+            draggable="true"
+            @dragstart.stop="onItemDragStart(cv.certificates, index, $event)"
+            @dragover.prevent
+            @drop.stop="onItemDrop(cv.certificates, index)"
+          >
+            <div class="item-card-header">
+              <span class="drag-handle">:: Osvědčení {{ index + 1 }}</span>
+              <div class="order-controls">
+                <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
+                  <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
+                  Zlomit odsud na str. 2
+                </label>
+                <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.certificates, index, -1)">▲</button>
+                <button class="btn btn-icon" :disabled="index === cv.certificates.length - 1" @click="moveItem(cv.certificates, index, 1)">▼</button>
+                <button class="btn btn-danger btn-icon" @click="removeItem(cv.certificates, index)">Smazat</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Název</label>
+              <input type="text" v-model="item.title">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Popis / Rozsah</label>
+                <input type="text" v-model="item.desc">
+              </div>
+              <div class="form-group">
+                <label>Datum / Rok</label>
+                <input type="text" v-model="item.date">
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template v-else-if="secKey === 'strengths'">
+          <div class="form-group">
+            <label>Silné stránky (jedna na řádek)</label>
+            <textarea v-model="strengthsText"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Mohu nabídnout (jedna na řádek)</label>
+            <textarea v-model="offersText"></textarea>
+          </div>
+        </template>
+
+        <template v-else-if="secKey === 'interests'">
+          <div class="form-group">
+            <label>Zájmy</label>
+            <input type="text" v-model="cv.interests">
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <div class="preview-pane">
+      <div class="page-indicator">
+        <div>Náhled: <strong>Strana 1</strong> (texty můžete upravovat přímo zde)</div>
+      </div>
+
+      <div class="print-page" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor }">
+        <header class="sheet-header">
+          <div class="photo-wrapper" v-if="cv.personal.photoPath">
+            <img :src="cv.personal.photoPath" alt="Fotografie">
+          </div>
+          <div class="header-info">
+            <h1 contenteditable="true" @blur="onInlineEdit(cv.personal, 'fullName', $event)">{{ cv.personal.fullName }}</h1>
+            <div class="contact-grid">
+              <div>Telefon:</div>
+              <div contenteditable="true" @blur="onInlineEdit(cv.personal, 'phone', $event)">{{ cv.personal.phone }}</div>
+              <div>E-mail:</div>
+              <div contenteditable="true" @blur="onInlineEdit(cv.personal, 'email', $event)">{{ cv.personal.email }}</div>
+              <div>Bydliště:</div>
+              <div contenteditable="true" @blur="onInlineEdit(cv.personal, 'city', $event)">{{ cv.personal.city }}</div>
+              <div>Rok narození:</div>
+              <div contenteditable="true" @blur="onInlineEdit(cv.personal, 'birthYear', $event)">{{ cv.personal.birthYear }}</div>
+            </div>
+          </div>
+        </header>
+
+        <main class="page-body">
+          <template v-for="block in renderedPages.page1" :key="'p1-'+block.key">
+            <div class="cv-section">
+              <div class="section-label">
+                <span v-html="block.icon"></span>
+                <span>{{ block.title }}</span>
+              </div>
+              <div class="section-content">
+                <template v-if="block.type === 'education'">
+                  <div v-for="(item, idx) in block.items" :key="'edu-'+idx" class="cv-entry-block">
+                    <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'school', $event)">{{ item.school }}</div>
+                    <div class="entry-subtitle" contenteditable="true" @blur="onInlineEdit(item, 'field', $event)">{{ item.field }}</div>
+                    <div class="entry-period">
+                      <span contenteditable="true" @blur="onInlineEdit(item, 'period', $event)">{{ item.period }}</span>
+                      <span v-if="item.degree || item.period">&nbsp;</span>
+                      <span contenteditable="true" @blur="onInlineEdit(item, 'degree', $event)">{{ item.degree }}</span>
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'experience'">
+                  <div v-for="(item, idx) in block.items" :key="'exp-'+idx" class="cv-entry-block">
+                    <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'position', $event)">{{ item.position }}</div>
+                    <div class="entry-subtitle" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
+                    <div class="entry-period" v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
+                    <div class="entry-desc" v-if="item.description || true" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'languages'">
+                  <div class="inline-list">
+                    <span v-for="(item, idx) in block.items" :key="'lang-'+idx" class="inline-item">
+                      <strong contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong>: <span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
+                    </span>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'drivingLicenses'">
+                  <div class="inline-list">
+                    <span v-for="(item, idx) in block.items" :key="'dl-'+idx" class="inline-item">
+                      <strong contenteditable="true" @blur="onInlineEdit(item, 'group', $event)">{{ item.group }}</strong>&nbsp;<span contenteditable="true" @blur="onInlineEdit(item, 'note', $event)">{{ item.note }}</span>
+                    </span>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'skills'">
+                  <div v-for="(cat, idx) in block.items" :key="'scat-'+idx" class="sub-category-block">
+                    <div v-if="cat.items && cat.items.length">
+                      <div class="sub-category-title" contenteditable="true" @blur="onInlineEdit(cat, 'category', $event)">{{ cat.category }}</div>
+                      <div class="inline-list">
+                        <span v-for="(item, iIdx) in cat.items" :key="'sitem-'+iIdx" class="inline-item">
+                          <span contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</span> &ndash; <span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'certificates'">
+                  <div v-for="(item, idx) in block.items" :key="'cert-'+idx" class="cv-entry-block">
+                    <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'title', $event)">{{ item.title }}</div>
+                    <div class="entry-desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
+                    <div class="entry-period" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'strengths'">
+                  <div v-if="cv.skillsStrengths && cv.skillsStrengths.length" class="sub-category-block">
+                    <div class="sub-category-title">Mé silné stránky</div>
+                    <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsStrengths', $event)">{{ cv.skillsStrengths.join(', ') }}</div>
+                  </div>
+                  <div v-if="cv.skillsOffers && cv.skillsOffers.length" class="sub-category-block">
+                    <div class="sub-category-title">Mohu nabídnout</div>
+                    <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsOffers', $event)">{{ cv.skillsOffers.join(', ') }}</div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'interests'">
+                  <div class="cv-entry-block sub-item-line" contenteditable="true" @blur="onInlineEdit(cv, 'interests', $event)">{{ cv.interests }}</div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </main>
+      </div>
+
+      <div class="page-indicator" v-if="renderedPages.page2.length">
+        <div>Náhled: <strong>Strana 2</strong> (texty můžete upravovat přímo zde)</div>
+      </div>
+
+      <div class="print-page" v-if="renderedPages.page2.length" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor }">
+        <main class="page-body page-body-subsequent">
+          <template v-for="block in renderedPages.page2" :key="'p2-'+block.key">
+            <div class="cv-section">
+              <div class="section-label">
+                <span v-html="block.icon"></span>
+                <span>{{ block.title }}</span>
+              </div>
+              <div class="section-content">
+                <template v-if="block.type === 'education'">
+                  <div v-for="(item, idx) in block.items" :key="'edu-'+idx" class="cv-entry-block">
+                    <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'school', $event)">{{ item.school }}</div>
+                    <div class="entry-subtitle" contenteditable="true" @blur="onInlineEdit(item, 'field', $event)">{{ item.field }}</div>
+                    <div class="entry-period">
+                      <span contenteditable="true" @blur="onInlineEdit(item, 'period', $event)">{{ item.period }}</span>
+                      <span v-if="item.degree || item.period">&nbsp;</span>
+                      <span contenteditable="true" @blur="onInlineEdit(item, 'degree', $event)">{{ item.degree }}</span>
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'experience'">
+                  <div v-for="(item, idx) in block.items" :key="'exp-'+idx" class="cv-entry-block">
+                    <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'position', $event)">{{ item.position }}</div>
+                    <div class="entry-subtitle" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
+                    <div class="entry-period" v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
+                    <div class="entry-desc" v-if="item.description || true" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'languages'">
+                  <div class="inline-list">
+                    <span v-for="(item, idx) in block.items" :key="'lang-'+idx" class="inline-item">
+                      <strong contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong>: <span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
+                    </span>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'drivingLicenses'">
+                  <div class="inline-list">
+                    <span v-for="(item, idx) in block.items" :key="'dl-'+idx" class="inline-item">
+                      <strong contenteditable="true" @blur="onInlineEdit(item, 'group', $event)">{{ item.group }}</strong>&nbsp;<span contenteditable="true" @blur="onInlineEdit(item, 'note', $event)">{{ item.note }}</span>
+                    </span>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'skills'">
+                  <div v-for="(cat, idx) in block.items" :key="'scat-'+idx" class="sub-category-block">
+                    <div v-if="cat.items && cat.items.length">
+                      <div class="sub-category-title" contenteditable="true" @blur="onInlineEdit(cat, 'category', $event)">{{ cat.category }}</div>
+                      <div class="inline-list">
+                        <span v-for="(item, iIdx) in cat.items" :key="'sitem-'+iIdx" class="inline-item">
+                          <span contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</span> &ndash; <span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'certificates'">
+                  <div v-for="(item, idx) in block.items" :key="'cert-'+idx" class="cv-entry-block">
+                    <div class="entry-title" contenteditable="true" @blur="onInlineEdit(item, 'title', $event)">{{ item.title }}</div>
+                    <div class="entry-desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
+                    <div class="entry-period" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'strengths'">
+                  <div v-if="cv.skillsStrengths && cv.skillsStrengths.length" class="sub-category-block">
+                    <div class="sub-category-title">Mé silné stránky</div>
+                    <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsStrengths', $event)">{{ cv.skillsStrengths.join(', ') }}</div>
+                  </div>
+                  <div v-if="cv.skillsOffers && cv.skillsOffers.length" class="sub-category-block">
+                    <div class="sub-category-title">Mohu nabídnout</div>
+                    <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsOffers', $event)">{{ cv.skillsOffers.join(', ') }}</div>
+                  </div>
+                </template>
+                <template v-else-if="block.type === 'interests'">
+                  <div class="cv-entry-block sub-item-line" contenteditable="true" @blur="onInlineEdit(cv, 'interests', $event)">{{ cv.interests }}</div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const defaultSectionOrder = [
+      "education",
+      "experience",
+      "languages",
+      "drivingLicenses",
+      "skills",
+      "certificates",
+      "strengths",
+      "interests"
+    ];
+
+    const presetColors = [
+      "#005aa0",
+      "#0f2d59",
+      "#155e75",
+      "#047857",
+      "#831843",
+      "#334155",
+      "#1e293b"
+    ];
+
+    const emptyTemplate = {
+      personal: {
+        fullName: "",
+        phone: "",
+        birthYear: "",
+        email: "",
+        city: "",
+        photoPath: ""
+      },
+      primaryColor: "#005aa0",
+      scale: 1,
+      splitPoint: { section: "certificates", itemIndex: 2 },
+      sectionOrder: [...defaultSectionOrder],
+      education: [],
+      experience: [],
+      languages: [],
+      drivingLicenses: [],
+      skillsCategories: [
+        { category: "Operační systémy", items: [] },
+        { category: "Běžná práce na počítači", items: [] },
+        { category: "Grafické a konstrukční programy", items: [] },
+        { category: "Databázové systémy", items: [] }
+      ],
+      certificates: [],
+      skillsStrengths: [],
+      skillsOffers: [],
+      interests: ""
+    };
+
+    const icons = {
+      education: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 8.36L5.09 9 12 5.23 18.91 9 12 11.36zM6 13.5v3.36c1.61 1.04 3.73 1.64 6 1.64s4.39-.6 6-1.64V13.5c-1.63 1.05-3.74 1.67-6 1.67s-4.37-.62-6-1.67z"/></svg>',
+      experience: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>',
+      languages: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>',
+      drivingLicenses: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.78.59-3.43 1.58-4.76L12 12.82V20zm1-9.41l5.42-3.13C19.41 8.57 20 10.22 20 12c0 4.41-3.59 8-8 8v-7.18l1-1.23zM12 4c2.25 0 4.29.93 5.76 2.43L12 9.77 6.24 6.43C7.71 4.93 9.75 4 12 4z"/></svg>',
+      skills: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>',
+      certificates: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>',
+      strengths: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
+      interests: '<svg class="section-icon" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>'
+    };
+
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const cv = ref(JSON.parse(JSON.stringify(emptyTemplate)));
+        const fileInput = ref(null);
+        const photoInput = ref(null);
+
+        const draggedSectionIndex = ref(null);
+        const draggedItemInfo = ref(null);
+
+        const strengthsText = computed({
+          get: () => (cv.value.skillsStrengths || []).join("\n"),
+          set: (val) => {
+            cv.value.skillsStrengths = val.split("\n").map(s => s.trim()).filter(Boolean);
+          }
+        });
+
+        const offersText = computed({
+          get: () => (cv.value.skillsOffers || []).join("\n"),
+          set: (val) => {
+            cv.value.skillsOffers = val.split("\n").map(s => s.trim()).filter(Boolean);
+          }
+        });
+
+        const onInlineEdit = (targetObj, key, event) => {
+          targetObj[key] = event.target.innerText.trim();
+        };
+
+        const onInlinePeriodEdit = (item, pIdx, event) => {
+          if (!item.periods) item.periods = [];
+          item.periods[pIdx] = event.target.innerText.trim();
+        };
+
+        const onInlineArrayEdit = (key, event) => {
+          const raw = event.target.innerText.trim();
+          cv.value[key] = raw.split(',').map(s => s.trim()).filter(Boolean);
+        };
+
+        const changeScale = (delta) => {
+          const nextVal = Math.round((cv.value.scale + delta) * 100) / 100;
+          if (nextVal >= 0.7 && nextVal <= 1.4) {
+            cv.value.scale = nextVal;
+          }
+        };
+
+        const resetScale = () => {
+          cv.value.scale = 1;
+        };
+
+        const getPeriods = (item) => {
+          if (!item.periods) {
+            item.periods = item.period ? [item.period] : [""];
+          }
+          return item.periods;
+        };
+
+        const addPeriod = (item) => {
+          if (!item.periods) {
+            item.periods = item.period ? [item.period] : [""];
+          }
+          item.periods.push("");
+        };
+
+        const removePeriod = (item, pIdx) => {
+          if (item.periods && item.periods.length > 1) {
+            item.periods.splice(pIdx, 1);
+          }
+        };
+
+        const isSplitAt = (secKey, index) => {
+          const sp = cv.value.splitPoint;
+          if (!sp) return false;
+          if (index === null || index === undefined) {
+            return sp.section === secKey && sp.itemIndex === null;
+          }
+          return sp.section === secKey && sp.itemIndex === index;
+        };
+
+        const toggleSplit = (secKey, index) => {
+          if (isSplitAt(secKey, index)) {
+            cv.value.splitPoint = null;
+          } else {
+            cv.value.splitPoint = { section: secKey, itemIndex: index };
+          }
+        };
+
+        const renderedPages = computed(() => {
+          const page1 = [];
+          const page2 = [];
+          let reachedSplit = false;
+          const sp = cv.value.splitPoint;
+
+          cv.value.sectionOrder.forEach(secKey => {
+            if (secKey === 'strengths') {
+              if (cv.value.skillsStrengths.length || cv.value.skillsOffers.length) {
+                if (sp && sp.section === secKey && sp.itemIndex === null) reachedSplit = true;
+                const block = {
+                  key: secKey,
+                  type: 'strengths',
+                  title: 'Dovednosti',
+                  icon: icons.strengths,
+                  data: {
+                    strengths: cv.value.skillsStrengths,
+                    offers: cv.value.skillsOffers
+                  }
+                };
+                if (!reachedSplit) page1.push(block); else page2.push(block);
+              }
+              return;
+            }
+
+            if (secKey === 'interests') {
+              if (cv.value.interests) {
+                if (sp && sp.section === secKey && sp.itemIndex === null) reachedSplit = true;
+                const block = {
+                  key: secKey,
+                  type: 'interests',
+                  title: 'Zájmy',
+                  icon: icons.interests,
+                  text: cv.value.interests
+                };
+                if (!reachedSplit) page1.push(block); else page2.push(block);
+              }
+              return;
+            }
+
+            const items = cv.value[secKey === 'skills' ? 'skillsCategories' : secKey] || [];
+            if (!items.length) return;
+
+            if (reachedSplit) {
+              page2.push({
+                key: secKey,
+                type: secKey,
+                title: getSectionTitle(secKey),
+                icon: icons[secKey],
+                items: items
+              });
+              return;
+            }
+
+            if (sp && sp.section === secKey) {
+              if (sp.itemIndex === null || sp.itemIndex === 0) {
+                reachedSplit = true;
+                page2.push({
+                  key: secKey,
+                  type: secKey,
+                  title: getSectionTitle(secKey),
+                  icon: icons[secKey],
+                  items: items
+                });
+              } else {
+                const p1Items = items.slice(0, sp.itemIndex);
+                const p2Items = items.slice(sp.itemIndex);
+                if (p1Items.length) {
+                  page1.push({
+                    key: secKey + '-p1',
+                    type: secKey,
+                    title: getSectionTitle(secKey),
+                    icon: icons[secKey],
+                    items: p1Items
+                  });
+                }
+                if (p2Items.length) {
+                  page2.push({
+                    key: secKey + '-p2',
+                    type: secKey,
+                    title: getSectionTitle(secKey),
+                    icon: icons[secKey],
+                    items: p2Items
+                  });
+                }
+                reachedSplit = true;
+              }
+            } else {
+              page1.push({
+                key: secKey,
+                type: secKey,
+                title: getSectionTitle(secKey),
+                icon: icons[secKey],
+                items: items
+              });
+            }
+          });
+
+          return { page1, page2 };
+        });
+
+        const getSectionTitle = (key) => {
+          const titles = {
+            education: "Vzdělání",
+            experience: "Praxe",
+            languages: "Jazyky",
+            drivingLicenses: "Řidičský průkaz",
+            skills: "Technické znalosti",
+            certificates: "Kurzy",
+            strengths: "Dovednosti",
+            interests: "Zájmy"
+          };
+          return titles[key] || key;
+        };
+
+        const hasAddButton = (key) => {
+          return ["education", "experience", "languages", "drivingLicenses", "certificates"].includes(key);
+        };
+
+        const addItemBySection = (key) => {
+          if (key === "education") addItem(cv.value.education, { school: '', field: '', period: '', degree: '' });
+          if (key === "experience") addItem(cv.value.experience, { position: '', company: '', periods: [''], description: '' });
+          if (key === "languages") addItem(cv.value.languages, { name: '', level: '' });
+          if (key === "drivingLicenses") addItem(cv.value.drivingLicenses, { group: '', note: '' });
+          if (key === "certificates") addItem(cv.value.certificates, { title: '', desc: '', date: '' });
+        };
+
+        const addItem = (arr, template) => {
+          arr.push(JSON.parse(JSON.stringify(template)));
+        };
+
+        const removeItem = (arr, index) => {
+          arr.splice(index, 1);
+        };
+
+        const moveItem = (arr, index, delta) => {
+          const newIndex = index + delta;
+          if (newIndex < 0 || newIndex >= arr.length) return;
+          const [moved] = arr.splice(index, 1);
+          arr.splice(newIndex, 0, moved);
+        };
+
+        const moveSection = (index, delta) => {
+          moveItem(cv.value.sectionOrder, index, delta);
+        };
+
+        const onSectionDragStart = (index, event) => {
+          draggedSectionIndex.value = index;
+          event.dataTransfer.effectAllowed = "move";
+        };
+
+        const onSectionDrop = (targetIndex) => {
+          if (draggedSectionIndex.value === null || draggedSectionIndex.value === targetIndex) return;
+          const [moved] = cv.value.sectionOrder.splice(draggedSectionIndex.value, 1);
+          cv.value.sectionOrder.splice(targetIndex, 0, moved);
+          draggedSectionIndex.value = null;
+        };
+
+        const onItemDragStart = (arr, index, event) => {
+          draggedItemInfo.value = { arr, index };
+          event.dataTransfer.effectAllowed = "move";
+        };
+
+        const onItemDrop = (targetArr, targetIndex) => {
+          if (!draggedItemInfo.value) return;
+          const { arr, index } = draggedItemInfo.value;
+          if (arr === targetArr && index !== targetIndex) {
+            const [moved] = arr.splice(index, 1);
+            arr.splice(targetIndex, 0, moved);
+          }
+          draggedItemInfo.value = null;
+        };
+
+        const autoLoadJson = async () => {
+          try {
+            const response = await fetch("./cv.json");
+            if (response.ok) {
+              const data = await response.json();
+              if (!data.sectionOrder) data.sectionOrder = [...defaultSectionOrder];
+              if (data.splitPoint === undefined) data.splitPoint = { section: "certificates", itemIndex: 2 };
+              if (data.scale === undefined) data.scale = 1;
+              if (data.primaryColor === undefined) data.primaryColor = "#005aa0";
+              if (data.experience) {
+                data.experience.forEach(exp => {
+                  if (!exp.periods) {
+                    exp.periods = exp.period ? [exp.period] : [""];
+                  }
+                });
+              }
+              cv.value = Object.assign(JSON.parse(JSON.stringify(emptyTemplate)), data);
+            }
+          } catch (e) {}
+        };
+
+        onMounted(() => {
+          autoLoadJson();
+        });
+
+        const triggerPrint = () => {
+          window.print();
+        };
+
+        const exportJson = () => {
+          const exportData = {
+            personal: cv.value.personal,
+            primaryColor: cv.value.primaryColor,
+            scale: cv.value.scale,
+            splitPoint: cv.value.splitPoint,
+            sectionOrder: cv.value.sectionOrder,
+            education: cv.value.education,
+            experience: cv.value.experience,
+            languages: cv.value.languages,
+            drivingLicenses: cv.value.drivingLicenses,
+            skillsCategories: cv.value.skillsCategories,
+            certificates: cv.value.certificates,
+            skillsStrengths: cv.value.skillsStrengths,
+            skillsOffers: cv.value.skillsOffers,
+            interests: cv.value.interests
+          };
+          const jsonStr = JSON.stringify(exportData, null, 2);
+          const blob = new Blob([jsonStr], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          const name = cv.value.personal.fullName ? cv.value.personal.fullName.toLowerCase().replace(/\s+/g, '-') : "cv";
+          a.download = `${name}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        };
+
+        const triggerImport = () => {
+          if (fileInput.value) fileInput.value.click();
+        };
+
+        const handleImport = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            try {
+              const parsed = JSON.parse(event.target.result);
+              if (!parsed.sectionOrder) parsed.sectionOrder = [...defaultSectionOrder];
+              if (parsed.splitPoint === undefined) parsed.splitPoint = { section: "certificates", itemIndex: 2 };
+              if (parsed.scale === undefined) parsed.scale = 1;
+              if (parsed.primaryColor === undefined) parsed.primaryColor = "#005aa0";
+              if (parsed.experience) {
+                parsed.experience.forEach(exp => {
+                  if (!exp.periods) {
+                    exp.periods = exp.period ? [exp.period] : [""];
+                  }
+                });
+              }
+              cv.value = Object.assign(JSON.parse(JSON.stringify(emptyTemplate)), parsed);
+              e.target.value = "";
+            } catch (err) {
+              alert("Chyba při čtení JSON: Neplatný formát souboru.");
+            }
+          };
+          reader.readAsText(file);
+        };
+
+        const triggerPhotoSelect = () => {
+          if (photoInput.value) photoInput.value.click();
+        };
+
+        const handlePhotoUpload = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            cv.value.personal.photoPath = event.target.result;
+            e.target.value = "";
+          };
+          reader.readAsDataURL(file);
+        };
+
+        return {
+          cv,
+          presetColors,
+          fileInput,
+          photoInput,
+          strengthsText,
+          offersText,
+          onInlineEdit,
+          onInlinePeriodEdit,
+          onInlineArrayEdit,
+          changeScale,
+          resetScale,
+          getPeriods,
+          addPeriod,
+          removePeriod,
+          isSplitAt,
+          toggleSplit,
+          renderedPages,
+          getSectionTitle,
+          hasAddButton,
+          addItemBySection,
+          addItem,
+          removeItem,
+          moveItem,
+          moveSection,
+          onSectionDragStart,
+          onSectionDrop,
+          onItemDragStart,
+          onItemDrop,
+          triggerPrint,
+          exportJson,
+          triggerImport,
+          handleImport,
+          triggerPhotoSelect,
+          handlePhotoUpload
+        };
+      }
+    }).mount("#app");
+  </script>
+</body>
+</html>
