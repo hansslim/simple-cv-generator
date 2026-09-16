@@ -58,12 +58,22 @@
       min-width: 0;
       height: 100%;
       overflow: auto;
-      padding: 30px;
+      padding: 24px;
       background: #475569;
       display: flex;
       flex-direction: column;
       align-items: safe center;
-      gap: 30px;
+      gap: 24px;
+    }
+
+    .preview-container {
+      zoom: var(--preview-zoom, 0.75);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+      margin: 0 auto;
     }
 
     .action-bar {
@@ -591,6 +601,14 @@
         overflow: visible !important;
       }
 
+      .preview-container {
+        zoom: 1 !important;
+        display: block !important;
+        gap: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+      }
+
       .print-page {
         box-shadow: none !important;
         width: 100% !important;
@@ -992,12 +1010,21 @@
       </div>
     </div>
 
-    <div class="preview-pane">
-      <div class="page-indicator">
-        <div>Náhled: <strong>Strana 1</strong> (texty můžete upravovat přímo zde)</div>
-      </div>
+    <div class="preview-pane" :style="{ '--preview-zoom': previewZoom }">
+      <div class="preview-container">
+        <div class="page-indicator">
+          <div>Náhled: <strong>Strana 1</strong> (editovatelný)</div>
+          <div class="scale-control" title="Velikost náhledu v okně (Lupa)">
+            <span style="font-size: 11px; color: #64748b; font-weight: 600; margin-right: 2px;">Lupa:</span>
+            <button class="btn btn-icon" @click="changePreviewZoom(-0.05)" :disabled="previewZoom <= 0.4">-</button>
+            <span class="scale-label" @dblclick="resetPreviewZoom" title="Dvojklik pro reset na 75%">{{ Math.round(previewZoom * 100) }} %</span>
+            <button class="btn btn-icon" @click="changePreviewZoom(0.05)" :disabled="previewZoom >= 1.5">+</button>
+            <button class="btn btn-icon" @click="previewZoom = 0.75" title="Nastavit na 75%" style="font-size: 10px; padding: 2px 5px;">75%</button>
+            <button class="btn btn-icon" @click="previewZoom = 1" title="Originální velikost (100%)" style="font-size: 10px; padding: 2px 5px;">100%</button>
+          </div>
+        </div>
 
-      <div class="print-page" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor }">
+        <div class="print-page" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor }">
         <header class="sheet-header">
           <div class="photo-wrapper" v-if="cv.personal.photoPath">
             <img :src="cv.personal.photoPath" alt="Fotografie">
@@ -1179,6 +1206,7 @@
           </template>
         </main>
       </div>
+      </div>
     </div>
   </div>
 
@@ -1292,6 +1320,19 @@
 
         const resetScale = () => {
           cv.value.scale = 1;
+        };
+
+        const previewZoom = ref(0.75);
+
+        const changePreviewZoom = (delta) => {
+          const nextVal = Math.round((previewZoom.value + delta) * 100) / 100;
+          if (nextVal >= 0.4 && nextVal <= 1.5) {
+            previewZoom.value = nextVal;
+          }
+        };
+
+        const resetPreviewZoom = () => {
+          previewZoom.value = 0.75;
         };
 
         const getPeriods = (item) => {
@@ -1594,6 +1635,9 @@
           onInlineArrayEdit,
           changeScale,
           resetScale,
+          previewZoom,
+          changePreviewZoom,
+          resetPreviewZoom,
           getPeriods,
           addPeriod,
           removePeriod,
