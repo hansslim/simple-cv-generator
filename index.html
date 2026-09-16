@@ -10,25 +10,22 @@
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://hansslim.github.io/simple-cv-generator/">
 
-  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hansslim.github.io/simple-cv-generator/">
   <meta property="og:title" content="Simple CV Generator – Tvorba strukturovaného životopisu na A4 online">
   <meta property="og:description" content="Rychlý a soukromý open-source generátor strukturovaného životopisu s přesným exportem do PDF na formát A4. Bez registrace.">
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Simple CV Generator – Tvorba strukturovaného životopisu na A4 online">
   <meta name="twitter:description" content="Rychlý a soukromý open-source generátor strukturovaného životopisu s přesným exportem do PDF na formát A4. Bez registrace.">
 
-  <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Simple CV Generator",
     "url": "https://hansslim.github.io/simple-cv-generator/",
-    "description": "Rychlý a soukromý online generátor strukturovaného životopisu s přesným exportem do PDF na formát A4.",
+    "description": "Rychlý a soukromý open-source generátor strukturovaného životopisu s přesným exportem do PDF na formát A4.",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "All",
     "browserRequirements": "Requires JavaScript. Requires HTML5.",
@@ -44,6 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
   <style>
     :root {
       --cv-blue: #005aa0;
@@ -151,15 +149,6 @@
       display: flex;
       align-items: center;
       gap: 6px;
-    }
-
-    .brand-badge {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 1px 6px;
-      background: #e0f2fe;
-      color: #0369a1;
-      border-radius: 9999px;
     }
 
     .btn-about-trigger {
@@ -273,7 +262,6 @@
       display: none;
     }
 
-    /* MODAL DIALOG */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -468,7 +456,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       flex-shrink: 0;
     }
 
@@ -728,7 +716,7 @@
       margin-left: auto;
       margin-right: auto;
       background: #ffffff;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
       position: relative;
       display: flex;
       flex-direction: column;
@@ -794,7 +782,7 @@
       padding: 2px 8px;
       border-radius: 10px;
       letter-spacing: 0.3px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
       text-transform: uppercase;
       font-family: system-ui, -apple-system, sans-serif;
     }
@@ -1161,7 +1149,6 @@
 </head>
 <body>
   <div id="app">
-    <!-- ABOUT MODAL -->
     <div v-if="showAboutModal" class="modal-backdrop" @click.self="showAboutModal = false">
       <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
         <div class="modal-header">
@@ -1249,7 +1236,6 @@
     </div>
 
     <div class="editor-pane">
-      <!-- APP HEADER & ACTION BAR -->
       <div class="app-header-container">
         <div class="brand-row">
           <div class="brand-group">
@@ -1293,7 +1279,6 @@
         </div>
       </div>
 
-      <!-- OSOBNÍ ÚDAJE -->
       <div class="form-section" :class="{ 'is-collapsed': isCollapsed('personal') }">
         <div class="section-header-bar" style="cursor: pointer;" @click="toggleCollapse('personal')">
           <span class="section-header-title">Osobní údaje</span>
@@ -1338,7 +1323,6 @@
         </div>
       </div>
 
-      <!-- NASTAVENÍ VZHLEDU A ROZVRŽENÍ -->
       <div class="form-section" :class="{ 'is-collapsed': isCollapsed('layout') }">
         <div class="section-header-bar" style="cursor: pointer;" @click="toggleCollapse('layout')">
           <span class="section-header-title">Vzhled a rozvržení</span>
@@ -1552,22 +1536,22 @@
                 </div>
               </div>
               <div class="form-group">
-                <label>Škola</label>
+                <label>Škola / Instituce</label>
                 <input type="text" v-model="item.school">
+              </div>
+              <div class="form-group">
+                <label>Obor / Zaměření</label>
+                <input type="text" v-model="item.field">
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label>Obor</label>
-                  <input type="text" v-model="item.field">
-                </div>
-                <div class="form-group">
-                  <label>Období</label>
+                  <label>Období (např. září 2020 - červen 2024)</label>
                   <input type="text" v-model="item.period">
                 </div>
-              </div>
-              <div class="form-group">
-                <label>Ukončení / Titul / Stupeň</label>
-                <input type="text" v-model="item.degree">
+                <div class="form-group">
+                  <label>Titul / Ukončení (např. Maturita / Vyučení)</label>
+                  <input type="text" v-model="item.degree">
+                </div>
               </div>
             </div>
           </template>
@@ -1595,38 +1579,31 @@
                   <button class="btn btn-danger btn-icon" @click="removeItem(cv.experience, index)">Smazat</button>
                 </div>
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Pracovní pozice</label>
-                  <input type="text" v-model="item.position">
-                </div>
-                <div class="form-group">
-                  <label>Společnost</label>
-                  <input type="text" v-model="item.company">
-                </div>
+              <div class="form-group">
+                <label>Pozice</label>
+                <input type="text" v-model="item.position">
               </div>
-
+              <div class="form-group">
+                <label>Firma / Zaměstnavatel</label>
+                <input type="text" v-model="item.company">
+              </div>
               <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                  <label>Časové intervaly</label>
-                  <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addPeriod(item)">+ Interval</button>
+                  <label>Období (např. červenec 2023 - srpen 2023 (2 měsíce))</label>
+                  <button class="btn btn-icon" @click="addPeriod(item)" title="Přidat další období">+ Období</button>
                 </div>
-                <div v-for="(per, pIdx) in getPeriods(item)" :key="'per-'+pIdx" style="display: flex; gap: 4px; margin-bottom: 4px;">
-                  <input type="text" v-model="item.periods[pIdx]" placeholder="např. červenec 2024 - srpen 2024 (2 měsíce)">
-                  <button class="btn btn-icon" :disabled="pIdx === 0" @click="moveItem(item.periods, pIdx, -1)">▲</button>
-                  <button class="btn btn-icon" :disabled="pIdx === item.periods.length - 1" @click="moveItem(item.periods, pIdx, 1)">▼</button>
-                  <button class="btn btn-danger btn-icon" :disabled="item.periods.length <= 1" @click="removePeriod(item, pIdx)">X</button>
+                <div v-for="(p, pIdx) in getPeriods(item)" :key="'period-'+pIdx" style="display: flex; gap: 4px; margin-bottom: 4px;">
+                  <input type="text" v-model="item.periods[pIdx]" placeholder="např. červenec 2023 - srpen 2023 (2 měsíce)">
+                  <button class="btn btn-icon btn-danger" v-if="item.periods.length > 1" @click="removePeriod(item, pIdx)" title="Odebrat toto období">✕</button>
                 </div>
               </div>
-
               <div class="form-group">
-                <label>Náplň práce</label>
+                <label>Popis / Náplň práce</label>
                 <textarea v-model="item.description"></textarea>
               </div>
-
               <div class="form-group">
-                <label>Reference (volitelné)</label>
-                <input type="text" v-model="item.reference" placeholder="např. Ing. Petr Novák, CTO, email: petr@firma.cz, tel.: 777 777 777">
+                <label>Reference (volitelné – např. Ing. Petr Novák, CTO, tel.: 777 777 777)</label>
+                <input type="text" v-model="item.reference" placeholder="Jméno, pozice, kontakt...">
               </div>
             </div>
           </template>
@@ -1642,12 +1619,12 @@
               @dragover.prevent
               @drop.stop="onItemDrop(cv.languages, index)"
             >
-              <div class="item-card-header" style="margin-bottom: 4px;">
+              <div class="item-card-header">
                 <span class="drag-handle">:: Jazyk {{ index + 1 }}</span>
                 <div class="order-controls">
                   <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
                     <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
-                    Zlomit odsud
+                    Zlomit odsud na str. 2
                   </label>
                   <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.languages, index, -1)">▲</button>
                   <button class="btn btn-icon" :disabled="index === cv.languages.length - 1" @click="moveItem(cv.languages, index, 1)">▼</button>
@@ -1655,8 +1632,14 @@
                 </div>
               </div>
               <div class="form-row">
-                <input type="text" v-model="item.name" placeholder="Jazyk">
-                <input type="text" v-model="item.level" placeholder="Úroveň">
+                <div class="form-group">
+                  <label>Jazyk</label>
+                  <input type="text" v-model="item.name">
+                </div>
+                <div class="form-group">
+                  <label>Úroveň (např. B2 / Rodilý mluvčí)</label>
+                  <input type="text" v-model="item.level">
+                </div>
               </div>
             </div>
           </template>
@@ -1672,12 +1655,12 @@
               @dragover.prevent
               @drop.stop="onItemDrop(cv.drivingLicenses, index)"
             >
-              <div class="item-card-header" style="margin-bottom: 4px;">
-                <span class="drag-handle">:: Skupina {{ index + 1 }}</span>
+              <div class="item-card-header">
+                <span class="drag-handle">:: Oprávnění {{ index + 1 }}</span>
                 <div class="order-controls">
                   <label class="split-toggle" :class="{ active: isSplitAt(secKey, index) }">
                     <input type="checkbox" :checked="isSplitAt(secKey, index)" @change="toggleSplit(secKey, index)">
-                    Zlomit odsud
+                    Zlomit odsud na str. 2
                   </label>
                   <button class="btn btn-icon" :disabled="index === 0" @click="moveItem(cv.drivingLicenses, index, -1)">▲</button>
                   <button class="btn btn-icon" :disabled="index === cv.drivingLicenses.length - 1" @click="moveItem(cv.drivingLicenses, index, 1)">▼</button>
@@ -1685,8 +1668,14 @@
                 </div>
               </div>
               <div class="form-row">
-                <input type="text" v-model="item.group" placeholder="Skupina">
-                <input type="text" v-model="item.note" placeholder="Poznámka">
+                <div class="form-group">
+                  <label>Skupina (např. B, T)</label>
+                  <input type="text" v-model="item.group">
+                </div>
+                <div class="form-group">
+                  <label>Poznámka (např. aktivní řidič)</label>
+                  <input type="text" v-model="item.note">
+                </div>
               </div>
             </div>
           </template>
@@ -1703,37 +1692,36 @@
               @drop.stop="onItemDrop(cv.skillsCategories, cIdx)"
             >
               <div class="item-card-header">
-                <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 140px; max-width: 260px;">
-                  <span class="drag-handle">::</span>
-                  <input type="text" v-model="cat.category" placeholder="Název kategorie (např. Operační systémy)" style="font-weight: 600; padding: 3px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%;">
-                </div>
+                <span class="drag-handle">:: Kategorie {{ cIdx + 1 }}</span>
                 <div class="order-controls">
                   <label class="split-toggle" :class="{ active: isSplitAt(secKey, cIdx) }">
                     <input type="checkbox" :checked="isSplitAt(secKey, cIdx)" @change="toggleSplit(secKey, cIdx)">
-                    Zlomit odsud
+                    Zlomit odsud na str. 2
                   </label>
                   <button class="btn btn-icon" :disabled="cIdx === 0" @click="moveItem(cv.skillsCategories, cIdx, -1)">▲</button>
                   <button class="btn btn-icon" :disabled="cIdx === cv.skillsCategories.length - 1" @click="moveItem(cv.skillsCategories, cIdx, 1)">▼</button>
-                  <button class="btn" style="padding: 2px 6px; font-size: 11px;" @click="addItem(cat.items, { name: '', level: '' })">Přidat položku</button>
-                  <button class="btn btn-danger btn-icon" @click="removeItem(cv.skillsCategories, cIdx)" title="Smazat kategorii">X</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cv.skillsCategories, cIdx)">Smazat kategorii</button>
                 </div>
               </div>
-              <div
-                v-for="(item, iIdx) in cat.items"
-                :key="'sitem-'+iIdx"
-                class="form-row"
-                style="margin-bottom: 4px; align-items: center;"
-                draggable="true"
-                @dragstart.stop="onItemDragStart(cat.items, iIdx, $event)"
-                @dragover.prevent
-                @drop.stop="onItemDrop(cat.items, iIdx)"
-              >
-                <input type="text" v-model="item.name" placeholder="Nástroj / Technologie">
-                <div style="display: flex; gap: 4px;">
-                  <input type="text" v-model="item.level" placeholder="Úroveň">
-                  <button class="btn btn-icon" :disabled="iIdx === 0" @click="moveItem(cat.items, iIdx, -1)">▲</button>
-                  <button class="btn btn-icon" :disabled="iIdx === cat.items.length - 1" @click="moveItem(cat.items, iIdx, 1)">▼</button>
-                  <button class="btn btn-danger btn-icon" @click="removeItem(cat.items, iIdx)">X</button>
+              <div class="form-group">
+                <label>Název kategorie (např. Kancelářský software)</label>
+                <input type="text" v-model="cat.category">
+              </div>
+              <div style="margin-top: 6px;">
+                <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span>Položky</span>
+                  <button class="btn btn-icon" @click="addItem(cat.items, { name: '', level: '' })">+ Položka</button>
+                </label>
+                <div
+                  v-for="(sItem, sIdx) in cat.items"
+                  :key="'sitem-'+sIdx"
+                  style="display: flex; gap: 4px; margin-bottom: 4px; align-items: center;"
+                >
+                  <input type="text" v-model="sItem.name" placeholder="Název (např. Excel)" style="flex: 2;">
+                  <input type="text" v-model="sItem.level" placeholder="Úroveň (např. Pokročilý)" style="flex: 2;">
+                  <button class="btn btn-icon" :disabled="sIdx === 0" @click="moveItem(cat.items, sIdx, -1)">▲</button>
+                  <button class="btn btn-icon" :disabled="sIdx === cat.items.length - 1" @click="moveItem(cat.items, sIdx, 1)">▼</button>
+                  <button class="btn btn-danger btn-icon" @click="removeItem(cat.items, sIdx)">✕</button>
                 </div>
               </div>
             </div>
@@ -1820,223 +1808,260 @@
           </div>
         </div>
 
-        <div class="print-page" :class="{ 'is-single-page': !renderedPages.page2.length }" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px', '--cv-left-col': (cv.leftColWidth || 100) + 'px', '--header-pt': (cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) + 'px', '--header-pb': (cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) + 'px', '--name-mb': (cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) + 'px' }">
+        <div
+          class="print-page"
+          :class="{ 'is-single-page': !renderedPages.page2.length }"
+          :style="{
+            '--cv-scale': cv.scale,
+            '--cv-blue': cv.primaryColor,
+            '--photo-size': (cv.personal.photoSize || 140) + 'px',
+            '--cv-left-col': (cv.leftColWidth || 100) + 'px',
+            '--header-pt': (cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) + 'px',
+            '--header-pb': (cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) + 'px',
+            '--name-mb': (cv.nameMarginBottom !== undefined ? cv.nameMarginBottom : 7) + 'px'
+          }"
+        >
           <div class="a4-guide-line" v-if="showA4Guide && !renderedPages.page2.length" title="Hranice formátu A4 (297 mm)">
             <span class="a4-guide-badge">Konec A4 (297 mm)</span>
           </div>
-        <header class="sheet-header" :class="{ 'has-photo': cv.personal.photoPath }">
-          <div class="photo-wrapper" v-if="cv.personal.photoPath">
-            <img :src="cv.personal.photoPath" alt="Fotografie">
-          </div>
-          <div class="header-info">
-            <h1 v-if="cv.personal.fullName" contenteditable="true" @blur="onInlineEdit(cv.personal, 'fullName', $event)">{{ cv.personal.fullName }}</h1>
-            <div class="contact-grid" v-if="visibleContacts.length">
-              <div
-                v-for="fieldKey in visibleContacts"
-                :key="'prev-c-'+fieldKey"
-                class="contact-row"
-              >
-                <span class="contact-icon" v-html="contactMeta[fieldKey].icon"></span>
-                <span class="contact-label">{{ contactMeta[fieldKey].label }}</span>
-                <span contenteditable="true" @blur="onInlineEdit(cv.personal, fieldKey, $event)">{{ cv.personal[fieldKey] }}</span>
+
+          <header class="sheet-header" :class="{ 'has-photo': cv.personal.photoPath }">
+            <div class="photo-wrapper" v-if="cv.personal.photoPath">
+              <img :src="cv.personal.photoPath" alt="Fotografie">
+            </div>
+            <div class="header-info">
+              <h1 class="sheet-name" v-if="cv.personal.fullName" contenteditable="true" @blur="onInlineEdit(cv.personal, 'fullName', $event)">{{ cv.personal.fullName }}</h1>
+              <div class="contact-grid" v-if="visibleContacts.length">
+                <div
+                  v-for="fieldKey in visibleContacts"
+                  :key="'prev-c-'+fieldKey"
+                  class="contact-row"
+                >
+                  <span class="contact-icon" v-html="contactMeta[fieldKey].icon"></span>
+                  <span class="contact-label">{{ contactMeta[fieldKey].label }}</span>
+                  <span contenteditable="true" @blur="onInlineEdit(cv.personal, fieldKey, $event)">{{ cv.personal[fieldKey] }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <main class="page-body">
-          <template v-for="(block, bIdx) in renderedPages.page1" :key="'p1-'+block.key">
-            <div class="cv-section">
-              <div class="section-label">
-                <span v-html="block.icon"></span>
-                <span contenteditable="true" @blur="onSectionTitleEdit(block.type, $event)">{{ block.title }}</span>
-              </div>
-              <div class="section-content">
-                <div class="photo-spacer" v-if="cv.personal.photoPath && bIdx === 0"></div>
-                <template v-if="block.type === 'education'">
-                  <template v-for="(item, idx) in block.items" :key="'edu-'+idx">
-                    <div class="cv-entry-block" v-if="isItemFilled('education', item)">
-                      <div class="entry-title" v-if="item.school" contenteditable="true" @blur="onInlineEdit(item, 'school', $event)">{{ item.school }}</div>
-                      <div class="entry-subtitle" v-if="item.field" contenteditable="true" @blur="onInlineEdit(item, 'field', $event)">{{ item.field }}</div>
-                      <div class="entry-period" v-if="item.period || item.degree">
-                        <span v-if="item.period" contenteditable="true" @blur="onInlineEdit(item, 'period', $event)">{{ item.period }}</span>
-                        <span v-if="item.period && item.degree">&nbsp;</span>
-                        <span v-if="item.degree" contenteditable="true" @blur="onInlineEdit(item, 'degree', $event)">{{ item.degree }}</span>
+          <main class="page-body">
+            <template v-for="(block, bIdx) in renderedPages.page1" :key="'p1-'+block.key">
+              <div class="cv-section">
+                <div class="section-label">
+                  <span v-html="block.icon"></span>
+                  <span contenteditable="true" @blur="onSectionTitleEdit(block.type, $event)">{{ block.title }}</span>
+                </div>
+                <div class="section-content">
+                  <div class="photo-spacer" v-if="cv.personal.photoPath && bIdx === 0"></div>
+
+                  <template v-if="block.type === 'education'">
+                    <template v-for="(item, idx) in block.items" :key="'edu-'+idx">
+                      <div class="cv-entry-block" v-if="isItemFilled('education', item)">
+                        <div class="entry-title" v-if="item.school" contenteditable="true" @blur="onInlineEdit(item, 'school', $event)">{{ item.school }}</div>
+                        <div class="entry-subtitle" v-if="item.field" contenteditable="true" @blur="onInlineEdit(item, 'field', $event)">{{ item.field }}</div>
+                        <div class="entry-period" v-if="item.period || item.degree">
+                          <span v-if="item.period" contenteditable="true" @blur="onInlineEdit(item, 'period', $event)">{{ item.period }}</span>
+                          <span v-if="item.period && item.degree">&nbsp;</span>
+                          <span v-if="item.degree" contenteditable="true" @blur="onInlineEdit(item, 'degree', $event)">{{ item.degree }}</span>
+                        </div>
                       </div>
-                    </div>
-                  </template>
-                </template>
-                <template v-else-if="block.type === 'experience'">
-                  <template v-for="(item, idx) in block.items" :key="'exp-'+idx">
-                    <div class="cv-entry-block" v-if="isItemFilled('experience', item)">
-                      <div class="entry-title" v-if="item.position" contenteditable="true" @blur="onInlineEdit(item, 'position', $event)">{{ item.position }}</div>
-                      <div class="entry-subtitle" v-if="item.company" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
-                      <template v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx">
-                        <div class="entry-period" v-if="p && String(p).trim()" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
-                      </template>
-                      <div class="entry-desc" v-if="item.description" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
-                      <div class="entry-reference" v-if="item.reference">Reference: <span contenteditable="true" @blur="onInlineEdit(item, 'reference', $event)">{{ item.reference }}</span></div>
-                    </div>
-                  </template>
-                </template>
-                <template v-else-if="block.type === 'languages'">
-                  <div class="inline-list">
-                    <template v-for="(item, idx) in block.items" :key="'lang-'+idx">
-                      <span class="inline-item" v-if="item.name || item.level">
-                        <strong v-if="item.name" contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong><span v-if="item.level"><template v-if="item.name">&nbsp;(</template><span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span><template v-if="item.name">)</template></span>
-                      </span>
                     </template>
-                  </div>
-                </template>
-                <template v-else-if="block.type === 'drivingLicenses'">
-                  <div class="inline-list">
-                    <template v-for="(item, idx) in block.items" :key="'dl-'+idx">
-                      <span class="inline-item" v-if="item.group || item.note">
-                        <strong v-if="item.group" contenteditable="true" @blur="onInlineEdit(item, 'group', $event)">{{ item.group }}</strong><template v-if="item.group && item.note">&nbsp;</template><span v-if="item.note" contenteditable="true" @blur="onInlineEdit(item, 'note', $event)">{{ item.note }}</span>
-                      </span>
-                    </template>
-                  </div>
-                </template>
-                <template v-else-if="block.type === 'skills'">
-                  <template v-for="(cat, idx) in block.items" :key="'scat-'+idx">
-                    <div class="sub-category-block" v-if="isItemFilled('skills', cat)">
-                      <div class="sub-category-title" v-if="cat.category" contenteditable="true" @blur="onInlineEdit(cat, 'category', $event)">{{ cat.category }}</div>
-                      <div class="inline-list" v-if="cat.items && cat.items.length">
-                        <template v-for="(item, iIdx) in cat.items" :key="'sitem-'+iIdx">
-                          <span class="inline-item" v-if="item.name || item.level">
-                            <span v-if="item.name" contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</span><template v-if="item.name && item.level"> &ndash; </template><span v-if="item.level" contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
-                          </span>
+                  </template>
+
+                  <template v-else-if="block.type === 'experience'">
+                    <template v-for="(item, idx) in block.items" :key="'exp-'+idx">
+                      <div class="cv-entry-block" v-if="isItemFilled('experience', item)">
+                        <div class="entry-title" v-if="item.position" contenteditable="true" @blur="onInlineEdit(item, 'position', $event)">{{ item.position }}</div>
+                        <div class="entry-subtitle" v-if="item.company" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
+                        <template v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx">
+                          <div class="entry-period" v-if="p && String(p).trim()" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
                         </template>
+                        <div class="entry-desc" v-if="item.description" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
+                        <div class="entry-reference" v-if="item.reference">Reference: <span contenteditable="true" @blur="onInlineEdit(item, 'reference', $event)">{{ item.reference }}</span></div>
                       </div>
-                    </div>
+                    </template>
                   </template>
-                </template>
-                <template v-else-if="block.type === 'certificates'">
-                  <template v-for="(item, idx) in block.items" :key="'cert-'+idx">
-                    <div class="cv-entry-block" v-if="item.title || item.desc || item.date">
-                      <div class="entry-title" v-if="item.title" contenteditable="true" @blur="onInlineEdit(item, 'title', $event)">{{ item.title }}</div>
-                      <div class="entry-desc" v-if="item.desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
-                      <div class="entry-period" v-if="item.date" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
-                    </div>
-                  </template>
-                </template>
-                <template v-else-if="block.type === 'strengths'">
-                  <div v-if="cv.skillsStrengths && cv.skillsStrengths.length && cv.skillsStrengths.some(s => s && s.trim())" class="sub-category-block">
-                    <div class="sub-category-title">Mé silné stránky</div>
-                    <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsStrengths', $event)">{{ cv.skillsStrengths.filter(s => s && s.trim()).join(', ') }}</div>
-                  </div>
-                  <div v-if="cv.skillsOffers && cv.skillsOffers.length && cv.skillsOffers.some(s => s && s.trim())" class="sub-category-block">
-                    <div class="sub-category-title">Mohu nabídnout</div>
-                    <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsOffers', $event)">{{ cv.skillsOffers.filter(s => s && s.trim()).join(', ') }}</div>
-                  </div>
-                </template>
-                <template v-else-if="block.type === 'interests'">
-                  <div class="cv-entry-block sub-item-line" v-if="cv.interests && cv.interests.trim()" contenteditable="true" @blur="onInlineEdit(cv, 'interests', $event)">{{ cv.interests }}</div>
-                </template>
-              </div>
-            </div>
-          </template>
-        </main>
-      </div>
 
-      <div class="page-indicator" v-if="renderedPages.page2.length">
-        <div>Náhled: <strong>Strana 2</strong></div>
-      </div>
-
-      <div class="print-page" v-if="renderedPages.page2.length" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px', '--cv-left-col': (cv.leftColWidth || 100) + 'px' }">
-        <main class="page-body page-body-subsequent">
-          <template v-for="block in renderedPages.page2" :key="'p2-'+block.key">
-            <div class="cv-section">
-              <div class="section-label">
-                <span v-html="block.icon"></span>
-                <span contenteditable="true" @blur="onSectionTitleEdit(block.type, $event)">{{ block.title }}</span>
-              </div>
-              <div class="section-content">
-                <template v-if="block.type === 'education'">
-                  <template v-for="(item, idx) in block.items" :key="'edu-'+idx">
-                    <div class="cv-entry-block" v-if="isItemFilled('education', item)">
-                      <div class="entry-title" v-if="item.school" contenteditable="true" @blur="onInlineEdit(item, 'school', $event)">{{ item.school }}</div>
-                      <div class="entry-subtitle" v-if="item.field" contenteditable="true" @blur="onInlineEdit(item, 'field', $event)">{{ item.field }}</div>
-                      <div class="entry-period" v-if="item.period || item.degree">
-                        <span v-if="item.period" contenteditable="true" @blur="onInlineEdit(item, 'period', $event)">{{ item.period }}</span>
-                        <span v-if="item.period && item.degree">&nbsp;</span>
-                        <span v-if="item.degree" contenteditable="true" @blur="onInlineEdit(item, 'degree', $event)">{{ item.degree }}</span>
-                      </div>
-                    </div>
-                  </template>
-                </template>
-                <template v-else-if="block.type === 'experience'">
-                  <template v-for="(item, idx) in block.items" :key="'exp-'+idx">
-                    <div class="cv-entry-block" v-if="isItemFilled('experience', item)">
-                      <div class="entry-title" v-if="item.position" contenteditable="true" @blur="onInlineEdit(item, 'position', $event)">{{ item.position }}</div>
-                      <div class="entry-subtitle" v-if="item.company" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
-                      <template v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx">
-                        <div class="entry-period" v-if="p && String(p).trim()" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
+                  <template v-else-if="block.type === 'languages'">
+                    <div class="inline-list">
+                      <template v-for="(item, idx) in block.items" :key="'lang-'+idx">
+                        <span class="inline-item" v-if="item.name || item.level">
+                          <strong v-if="item.name" contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong><span v-if="item.level"><template v-if="item.name">&nbsp;(</template><span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span><template v-if="item.name">)</template></span>
+                        </span>
                       </template>
-                      <div class="entry-desc" v-if="item.description" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
-                      <div class="entry-reference" v-if="item.reference">Reference: <span contenteditable="true" @blur="onInlineEdit(item, 'reference', $event)">{{ item.reference }}</span></div>
                     </div>
                   </template>
-                </template>
-                <template v-else-if="block.type === 'languages'">
-                  <div class="inline-list">
-                    <template v-for="(item, idx) in block.items" :key="'lang-'+idx">
-                      <span class="inline-item" v-if="item.name || item.level">
-                        <strong v-if="item.name" contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong><span v-if="item.level"><template v-if="item.name">&nbsp;(</template><span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span><template v-if="item.name">)</template></span>
-                      </span>
-                    </template>
-                  </div>
-                </template>
-                <template v-else-if="block.type === 'drivingLicenses'">
-                  <div class="inline-list">
-                    <template v-for="(item, idx) in block.items" :key="'dl-'+idx">
-                      <span class="inline-item" v-if="item.group || item.note">
-                        <strong v-if="item.group" contenteditable="true" @blur="onInlineEdit(item, 'group', $event)">{{ item.group }}</strong><template v-if="item.group && item.note">&nbsp;</template><span v-if="item.note" contenteditable="true" @blur="onInlineEdit(item, 'note', $event)">{{ item.note }}</span>
-                      </span>
-                    </template>
-                  </div>
-                </template>
-                <template v-else-if="block.type === 'skills'">
-                  <template v-for="(cat, idx) in block.items" :key="'scat-'+idx">
-                    <div class="sub-category-block" v-if="isItemFilled('skills', cat)">
-                      <div class="sub-category-title" v-if="cat.category" contenteditable="true" @blur="onInlineEdit(cat, 'category', $event)">{{ cat.category }}</div>
-                      <div class="inline-list" v-if="cat.items && cat.items.length">
-                        <template v-for="(item, iIdx) in cat.items" :key="'sitem-'+iIdx">
-                          <span class="inline-item" v-if="item.name || item.level">
-                            <span v-if="item.name" contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</span><template v-if="item.name && item.level"> &ndash; </template><span v-if="item.level" contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
-                          </span>
-                        </template>
+
+                  <template v-else-if="block.type === 'drivingLicenses'">
+                    <div class="inline-list">
+                      <template v-for="(item, idx) in block.items" :key="'dl-'+idx">
+                        <span class="inline-item" v-if="item.group || item.note">
+                          <strong v-if="item.group" contenteditable="true" @blur="onInlineEdit(item, 'group', $event)">{{ item.group }}</strong><template v-if="item.group && item.note">&nbsp;</template><span v-if="item.note" contenteditable="true" @blur="onInlineEdit(item, 'note', $event)">{{ item.note }}</span>
+                        </span>
+                      </template>
+                    </div>
+                  </template>
+
+                  <template v-else-if="block.type === 'skills'">
+                    <template v-for="(cat, idx) in block.items" :key="'scat-'+idx">
+                      <div class="sub-category-block" v-if="isItemFilled('skills', cat)">
+                        <div class="sub-category-title" v-if="cat.category" contenteditable="true" @blur="onInlineEdit(cat, 'category', $event)">{{ cat.category }}</div>
+                        <div class="inline-list" v-if="cat.items && cat.items.length">
+                          <template v-for="(item, iIdx) in cat.items" :key="'sitem-'+iIdx">
+                            <span class="inline-item" v-if="item.name || item.level">
+                              <span v-if="item.name" contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</span><template v-if="item.name && item.level"> &ndash; </template><span v-if="item.level" contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
+                            </span>
+                          </template>
+                        </div>
                       </div>
+                    </template>
+                  </template>
+
+                  <template v-else-if="block.type === 'certificates'">
+                    <template v-for="(item, idx) in block.items" :key="'cert-'+idx">
+                      <div class="cv-entry-block" v-if="item.title || item.desc || item.date">
+                        <div class="entry-title" v-if="item.title" contenteditable="true" @blur="onInlineEdit(item, 'title', $event)">{{ item.title }}</div>
+                        <div class="entry-desc" v-if="item.desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
+                        <div class="entry-period" v-if="item.date" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
+                      </div>
+                    </template>
+                  </template>
+
+                  <template v-else-if="block.type === 'strengths'">
+                    <div v-if="cv.skillsStrengths && cv.skillsStrengths.length && cv.skillsStrengths.some(s => s && s.trim())" class="sub-category-block">
+                      <div class="sub-category-title">Mé silné stránky</div>
+                      <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsStrengths', $event)">{{ cv.skillsStrengths.filter(s => s && s.trim()).join(', ') }}</div>
+                    </div>
+                    <div v-if="cv.skillsOffers && cv.skillsOffers.length && cv.skillsOffers.some(s => s && s.trim())" class="sub-category-block">
+                      <div class="sub-category-title">Mohu nabídnout</div>
+                      <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsOffers', $event)">{{ cv.skillsOffers.filter(s => s && s.trim()).join(', ') }}</div>
                     </div>
                   </template>
-                </template>
-                <template v-else-if="block.type === 'certificates'">
-                  <template v-for="(item, idx) in block.items" :key="'cert-'+idx">
-                    <div class="cv-entry-block" v-if="item.title || item.desc || item.date">
-                      <div class="entry-title" v-if="item.title" contenteditable="true" @blur="onInlineEdit(item, 'title', $event)">{{ item.title }}</div>
-                      <div class="entry-desc" v-if="item.desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
-                      <div class="entry-period" v-if="item.date" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
-                    </div>
+
+                  <template v-else-if="block.type === 'interests'">
+                    <div class="cv-entry-block sub-item-line" v-if="cv.interests && cv.interests.trim()" contenteditable="true" @blur="onInlineEdit(cv, 'interests', $event)">{{ cv.interests }}</div>
                   </template>
-                </template>
-                <template v-else-if="block.type === 'strengths'">
-                  <div v-if="cv.skillsStrengths && cv.skillsStrengths.length && cv.skillsStrengths.some(s => s && s.trim())" class="sub-category-block">
-                    <div class="sub-category-title">Mé silné stránky</div>
-                    <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsStrengths', $event)">{{ cv.skillsStrengths.filter(s => s && s.trim()).join(', ') }}</div>
-                  </div>
-                  <div v-if="cv.skillsOffers && cv.skillsOffers.length && cv.skillsOffers.some(s => s && s.trim())" class="sub-category-block">
-                    <div class="sub-category-title">Mohu nabídnout</div>
-                    <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsOffers', $event)">{{ cv.skillsOffers.filter(s => s && s.trim()).join(', ') }}</div>
-                  </div>
-                </template>
-                <template v-else-if="block.type === 'interests'">
-                  <div class="cv-entry-block sub-item-line" v-if="cv.interests && cv.interests.trim()" contenteditable="true" @blur="onInlineEdit(cv, 'interests', $event)">{{ cv.interests }}</div>
-                </template>
+                </div>
               </div>
-            </div>
-          </template>
-        </main>
-      </div>
+            </template>
+          </main>
+        </div>
+
+        <div class="page-indicator" v-if="renderedPages.page2.length">
+          <div>Náhled: <strong>Strana 2</strong></div>
+        </div>
+
+        <div
+          class="print-page"
+          v-if="renderedPages.page2.length"
+          :style="{
+            '--cv-scale': cv.scale,
+            '--cv-blue': cv.primaryColor,
+            '--photo-size': (cv.personal.photoSize || 140) + 'px',
+            '--cv-left-col': (cv.leftColWidth || 100) + 'px'
+          }"
+        >
+          <main class="page-body page-body-subsequent">
+            <template v-for="block in renderedPages.page2" :key="'p2-'+block.key">
+              <div class="cv-section">
+                <div class="section-label">
+                  <span v-html="block.icon"></span>
+                  <span contenteditable="true" @blur="onSectionTitleEdit(block.type, $event)">{{ block.title }}</span>
+                </div>
+                <div class="section-content">
+                  <template v-if="block.type === 'education'">
+                    <template v-for="(item, idx) in block.items" :key="'edu-'+idx">
+                      <div class="cv-entry-block" v-if="isItemFilled('education', item)">
+                        <div class="entry-title" v-if="item.school" contenteditable="true" @blur="onInlineEdit(item, 'school', $event)">{{ item.school }}</div>
+                        <div class="entry-subtitle" v-if="item.field" contenteditable="true" @blur="onInlineEdit(item, 'field', $event)">{{ item.field }}</div>
+                        <div class="entry-period" v-if="item.period || item.degree">
+                          <span v-if="item.period" contenteditable="true" @blur="onInlineEdit(item, 'period', $event)">{{ item.period }}</span>
+                          <span v-if="item.period && item.degree">&nbsp;</span>
+                          <span v-if="item.degree" contenteditable="true" @blur="onInlineEdit(item, 'degree', $event)">{{ item.degree }}</span>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+
+                  <template v-else-if="block.type === 'experience'">
+                    <template v-for="(item, idx) in block.items" :key="'exp-'+idx">
+                      <div class="cv-entry-block" v-if="isItemFilled('experience', item)">
+                        <div class="entry-title" v-if="item.position" contenteditable="true" @blur="onInlineEdit(item, 'position', $event)">{{ item.position }}</div>
+                        <div class="entry-subtitle" v-if="item.company" contenteditable="true" @blur="onInlineEdit(item, 'company', $event)">{{ item.company }}</div>
+                        <template v-for="(p, pIdx) in getPeriods(item)" :key="'p-'+pIdx">
+                          <div class="entry-period" v-if="p && String(p).trim()" contenteditable="true" @blur="onInlinePeriodEdit(item, pIdx, $event)">{{ p }}</div>
+                        </template>
+                        <div class="entry-desc" v-if="item.description" contenteditable="true" @blur="onInlineEdit(item, 'description', $event)">{{ item.description }}</div>
+                        <div class="entry-reference" v-if="item.reference">Reference: <span contenteditable="true" @blur="onInlineEdit(item, 'reference', $event)">{{ item.reference }}</span></div>
+                      </div>
+                    </template>
+                  </template>
+
+                  <template v-else-if="block.type === 'languages'">
+                    <div class="inline-list">
+                      <template v-for="(item, idx) in block.items" :key="'lang-'+idx">
+                        <span class="inline-item" v-if="item.name || item.level">
+                          <strong v-if="item.name" contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</strong><span v-if="item.level"><template v-if="item.name">&nbsp;(</template><span contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span><template v-if="item.name">)</template></span>
+                        </span>
+                      </template>
+                    </div>
+                  </template>
+
+                  <template v-else-if="block.type === 'drivingLicenses'">
+                    <div class="inline-list">
+                      <template v-for="(item, idx) in block.items" :key="'dl-'+idx">
+                        <span class="inline-item" v-if="item.group || item.note">
+                          <strong v-if="item.group" contenteditable="true" @blur="onInlineEdit(item, 'group', $event)">{{ item.group }}</strong><template v-if="item.group && item.note">&nbsp;</template><span v-if="item.note" contenteditable="true" @blur="onInlineEdit(item, 'note', $event)">{{ item.note }}</span>
+                        </span>
+                      </template>
+                    </div>
+                  </template>
+
+                  <template v-else-if="block.type === 'skills'">
+                    <template v-for="(cat, idx) in block.items" :key="'scat-'+idx">
+                      <div class="sub-category-block" v-if="isItemFilled('skills', cat)">
+                        <div class="sub-category-title" v-if="cat.category" contenteditable="true" @blur="onInlineEdit(cat, 'category', $event)">{{ cat.category }}</div>
+                        <div class="inline-list" v-if="cat.items && cat.items.length">
+                          <template v-for="(item, iIdx) in cat.items" :key="'sitem-'+iIdx">
+                            <span class="inline-item" v-if="item.name || item.level">
+                              <span v-if="item.name" contenteditable="true" @blur="onInlineEdit(item, 'name', $event)">{{ item.name }}</span><template v-if="item.name && item.level"> &ndash; </template><span v-if="item.level" contenteditable="true" @blur="onInlineEdit(item, 'level', $event)">{{ item.level }}</span>
+                            </span>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+
+                  <template v-else-if="block.type === 'certificates'">
+                    <template v-for="(item, idx) in block.items" :key="'cert-'+idx">
+                      <div class="cv-entry-block" v-if="item.title || item.desc || item.date">
+                        <div class="entry-title" v-if="item.title" contenteditable="true" @blur="onInlineEdit(item, 'title', $event)">{{ item.title }}</div>
+                        <div class="entry-desc" v-if="item.desc" contenteditable="true" @blur="onInlineEdit(item, 'desc', $event)">{{ item.desc }}</div>
+                        <div class="entry-period" v-if="item.date" contenteditable="true" @blur="onInlineEdit(item, 'date', $event)">{{ item.date }}</div>
+                      </div>
+                    </template>
+                  </template>
+
+                  <template v-else-if="block.type === 'strengths'">
+                    <div v-if="cv.skillsStrengths && cv.skillsStrengths.length && cv.skillsStrengths.some(s => s && s.trim())" class="sub-category-block">
+                      <div class="sub-category-title">Mé silné stránky</div>
+                      <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsStrengths', $event)">{{ cv.skillsStrengths.filter(s => s && s.trim()).join(', ') }}</div>
+                    </div>
+                    <div v-if="cv.skillsOffers && cv.skillsOffers.length && cv.skillsOffers.some(s => s && s.trim())" class="sub-category-block">
+                      <div class="sub-category-title">Mohu nabídnout</div>
+                      <div class="sub-item-line" contenteditable="true" @blur="onInlineArrayEdit('skillsOffers', $event)">{{ cv.skillsOffers.filter(s => s && s.trim()).join(', ') }}</div>
+                    </div>
+                  </template>
+
+                  <template v-else-if="block.type === 'interests'">
+                    <div class="cv-entry-block sub-item-line" v-if="cv.interests && cv.interests.trim()" contenteditable="true" @blur="onInlineEdit(cv, 'interests', $event)">{{ cv.interests }}</div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </main>
+        </div>
       </div>
     </div>
   </div>
@@ -2150,12 +2175,7 @@
         const photoInput = ref(null);
         const showA4Guide = ref(true);
         const showAboutModal = ref(false);
-
-        window.addEventListener("keydown", (e) => {
-          if (e.key === "Escape" && showAboutModal.value) {
-            showAboutModal.value = false;
-          }
-        });
+        const previewZoom = ref(0.75);
 
         const draggedSectionIndex = ref(null);
         const draggedItemInfo = ref(null);
@@ -2165,6 +2185,53 @@
 
         const toggleCollapse = (key) => {
           expandedSections.value[key] = !expandedSections.value[key];
+        };
+
+        const changeScale = (delta) => {
+          const nextVal = Math.round((cv.value.scale + delta) * 100) / 100;
+          if (nextVal >= 0.7 && nextVal <= 1.4) {
+            cv.value.scale = nextVal;
+          }
+        };
+
+        const resetScale = () => {
+          cv.value.scale = 1.2;
+        };
+
+        const changePreviewZoom = (delta) => {
+          const nextVal = Math.round((previewZoom.value + delta) * 100) / 100;
+          if (nextVal >= 0.4 && nextVal <= 1.5) {
+            previewZoom.value = nextVal;
+          }
+        };
+
+        const resetPreviewZoom = () => {
+          previewZoom.value = 0.75;
+        };
+
+        const changePhotoSize = (delta) => {
+          const current = cv.value.personal.photoSize || 140;
+          cv.value.personal.photoSize = Math.min(220, Math.max(80, current + delta));
+        };
+
+        const changeLeftColWidth = (delta) => {
+          const current = cv.value.leftColWidth || 100;
+          cv.value.leftColWidth = Math.min(200, Math.max(70, current + delta));
+        };
+
+        const changeHeaderPaddingTop = (delta) => {
+          const current = cv.value.headerPaddingTop !== undefined ? cv.value.headerPaddingTop : 22;
+          cv.value.headerPaddingTop = Math.min(70, Math.max(0, current + delta));
+        };
+
+        const changeHeaderPaddingBottom = (delta) => {
+          const current = cv.value.headerPaddingBottom !== undefined ? cv.value.headerPaddingBottom : 22;
+          cv.value.headerPaddingBottom = Math.min(70, Math.max(0, current + delta));
+        };
+
+        const changeNameMarginBottom = (delta) => {
+          const current = cv.value.nameMarginBottom !== undefined ? cv.value.nameMarginBottom : 7;
+          cv.value.nameMarginBottom = Math.min(40, Math.max(0, current + delta));
         };
 
         const strengthsText = computed({
@@ -2189,102 +2256,45 @@
         });
 
         const visibleContacts = computed(() => {
-          return contactOrder.value.filter(k => cv.value.personal[k] && String(cv.value.personal[k]).trim() !== '');
+          return contactOrder.value.filter(k => cv.value.personal[k] && String(cv.value.personal[k]).trim() !== "");
         });
 
-        const changePhotoSize = (delta) => {
-          const current = cv.value.personal.photoSize || 140;
-          const nextVal = Math.min(220, Math.max(80, current + delta));
-          cv.value.personal.photoSize = nextVal;
+        const moveItem = (arr, index, delta) => {
+          const newIndex = index + delta;
+          if (newIndex < 0 || newIndex >= arr.length) return;
+          const [moved] = arr.splice(index, 1);
+          arr.splice(newIndex, 0, moved);
         };
 
-        const changeLeftColWidth = (delta) => {
-          const current = cv.value.leftColWidth || 100;
-          const nextVal = Math.min(200, Math.max(70, current + delta));
-          cv.value.leftColWidth = nextVal;
+        const moveSection = (index, delta) => {
+          moveItem(cv.value.sectionOrder, index, delta);
         };
 
-        const changeHeaderPaddingTop = (delta) => {
-          const current = cv.value.headerPaddingTop !== undefined ? cv.value.headerPaddingTop : 22;
-          const nextVal = Math.min(70, Math.max(0, current + delta));
-          cv.value.headerPaddingTop = nextVal;
+        const onSectionDragStart = (index, event) => {
+          draggedSectionIndex.value = index;
+          event.dataTransfer.effectAllowed = "move";
         };
 
-        const changeHeaderPaddingBottom = (delta) => {
-          const current = cv.value.headerPaddingBottom !== undefined ? cv.value.headerPaddingBottom : 22;
-          const nextVal = Math.min(70, Math.max(0, current + delta));
-          cv.value.headerPaddingBottom = nextVal;
+        const onSectionDrop = (targetIndex) => {
+          if (draggedSectionIndex.value === null || draggedSectionIndex.value === targetIndex) return;
+          const [moved] = cv.value.sectionOrder.splice(draggedSectionIndex.value, 1);
+          cv.value.sectionOrder.splice(targetIndex, 0, moved);
+          draggedSectionIndex.value = null;
         };
 
-        const changeNameMarginBottom = (delta) => {
-          const current = cv.value.nameMarginBottom !== undefined ? cv.value.nameMarginBottom : 7;
-          const nextVal = Math.min(40, Math.max(0, current + delta));
-          cv.value.nameMarginBottom = nextVal;
+        const onItemDragStart = (arr, index, event) => {
+          draggedItemInfo.value = { arr, index };
+          event.dataTransfer.effectAllowed = "move";
         };
 
-        const onInlineEdit = (targetObj, key, event) => {
-          targetObj[key] = event.target.innerText.trim();
-        };
-
-        const onInlinePeriodEdit = (item, pIdx, event) => {
-          if (!item.periods) item.periods = [];
-          item.periods[pIdx] = event.target.innerText.trim();
-        };
-
-        const onInlineArrayEdit = (key, event) => {
-          const raw = event.target.innerText.trim();
-          cv.value[key] = raw.split(',').map(s => s.trim()).filter(Boolean);
-        };
-
-        const onSectionTitleEdit = (key, event) => {
-          if (!cv.value.sectionTitles) {
-            cv.value.sectionTitles = { ...defaultSectionTitles };
+        const onItemDrop = (targetArr, targetIndex) => {
+          if (!draggedItemInfo.value) return;
+          const { arr, index } = draggedItemInfo.value;
+          if (arr === targetArr && index !== targetIndex) {
+            const [moved] = arr.splice(index, 1);
+            arr.splice(targetIndex, 0, moved);
           }
-          cv.value.sectionTitles[key] = event.target.innerText.trim();
-        };
-
-        const changeScale = (delta) => {
-          const nextVal = Math.round((cv.value.scale + delta) * 100) / 100;
-          if (nextVal >= 0.7 && nextVal <= 1.4) {
-            cv.value.scale = nextVal;
-          }
-        };
-
-        const resetScale = () => {
-          cv.value.scale = 1.2;
-        };
-
-        const previewZoom = ref(0.75);
-
-        const changePreviewZoom = (delta) => {
-          const nextVal = Math.round((previewZoom.value + delta) * 100) / 100;
-          if (nextVal >= 0.4 && nextVal <= 1.5) {
-            previewZoom.value = nextVal;
-          }
-        };
-
-        const resetPreviewZoom = () => {
-          previewZoom.value = 0.75;
-        };
-
-        const getPeriods = (item) => {
-          if (!item.periods) {
-            item.periods = item.period ? [item.period] : [""];
-          }
-          return item.periods;
-        };
-
-        const addPeriod = (item) => {
-          if (!item.periods) {
-            item.periods = item.period ? [item.period] : [""];
-          }
-          item.periods.push("");
-        };
-
-        const removePeriod = (item, pIdx) => {
-          if (item.periods && item.periods.length > 1) {
-            item.periods.splice(pIdx, 1);
-          }
+          draggedItemInfo.value = null;
         };
 
         const isSplitAt = (secKey, index) => {
@@ -2307,11 +2317,23 @@
         const isItemFilled = (type, item) => {
           if (!item) return false;
           if (type === 'education') {
-            return Boolean((item.school && String(item.school).trim()) || (item.field && String(item.field).trim()) || (item.period && String(item.period).trim()) || (item.degree && String(item.degree).trim()));
+            return Boolean(
+              (item.school && String(item.school).trim()) ||
+              (item.field && String(item.field).trim()) ||
+              (item.period && String(item.period).trim()) ||
+              (item.degree && String(item.degree).trim())
+            );
           }
           if (type === 'experience') {
             const hasPeriods = item.periods && item.periods.some(p => p && String(p).trim());
-            return Boolean((item.position && String(item.position).trim()) || (item.company && String(item.company).trim()) || hasPeriods || (item.period && String(item.period).trim()) || (item.description && String(item.description).trim()) || (item.reference && String(item.reference).trim()));
+            return Boolean(
+              (item.position && String(item.position).trim()) ||
+              (item.company && String(item.company).trim()) ||
+              hasPeriods ||
+              (item.period && String(item.period).trim()) ||
+              (item.description && String(item.description).trim()) ||
+              (item.reference && String(item.reference).trim())
+            );
           }
           if (type === 'languages') {
             return Boolean((item.name && String(item.name).trim()) || (item.level && String(item.level).trim()));
@@ -2442,14 +2464,25 @@
           return ["education", "experience", "languages", "drivingLicenses", "certificates", "skills"].includes(key);
         };
 
-        const addItemBySection = (key) => {
-          expandedSections.value[key] = true;
-          if (key === "education") addItem(cv.value.education, { school: '', field: '', period: '', degree: '' });
-          if (key === "experience") addItem(cv.value.experience, { position: '', company: '', periods: [''], description: '', reference: '' });
-          if (key === "languages") addItem(cv.value.languages, { name: '', level: '' });
-          if (key === "drivingLicenses") addItem(cv.value.drivingLicenses, { group: '', note: '' });
-          if (key === "certificates") addItem(cv.value.certificates, { title: '', desc: '', date: '' });
-          if (key === "skills") addItem(cv.value.skillsCategories, { category: '', items: [{ name: '', level: '' }] });
+        const onInlineEdit = (targetObj, key, event) => {
+          targetObj[key] = event.target.innerText.trim();
+        };
+
+        const onInlinePeriodEdit = (item, pIdx, event) => {
+          if (!item.periods) item.periods = [];
+          item.periods[pIdx] = event.target.innerText.trim();
+        };
+
+        const onInlineArrayEdit = (key, event) => {
+          const raw = event.target.innerText.trim();
+          cv.value[key] = raw.split(",").map(s => s.trim()).filter(Boolean);
+        };
+
+        const onSectionTitleEdit = (key, event) => {
+          if (!cv.value.sectionTitles) {
+            cv.value.sectionTitles = { ...defaultSectionTitles };
+          }
+          cv.value.sectionTitles[key] = event.target.innerText.trim();
         };
 
         const addItem = (arr, template) => {
@@ -2460,42 +2493,34 @@
           arr.splice(index, 1);
         };
 
-        const moveItem = (arr, index, delta) => {
-          const newIndex = index + delta;
-          if (newIndex < 0 || newIndex >= arr.length) return;
-          const [moved] = arr.splice(index, 1);
-          arr.splice(newIndex, 0, moved);
+        const addItemBySection = (key) => {
+          expandedSections.value[key] = true;
+          if (key === "education") addItem(cv.value.education, { school: "", field: "", period: "", degree: "" });
+          if (key === "experience") addItem(cv.value.experience, { position: "", company: "", periods: [""], description: "", reference: "" });
+          if (key === "languages") addItem(cv.value.languages, { name: "", level: "" });
+          if (key === "drivingLicenses") addItem(cv.value.drivingLicenses, { group: "", note: "" });
+          if (key === "certificates") addItem(cv.value.certificates, { title: "", desc: "", date: "" });
+          if (key === "skills") addItem(cv.value.skillsCategories, { category: "", items: [{ name: "", level: "" }] });
         };
 
-        const moveSection = (index, delta) => {
-          moveItem(cv.value.sectionOrder, index, delta);
-        };
-
-        const onSectionDragStart = (index, event) => {
-          draggedSectionIndex.value = index;
-          event.dataTransfer.effectAllowed = "move";
-        };
-
-        const onSectionDrop = (targetIndex) => {
-          if (draggedSectionIndex.value === null || draggedSectionIndex.value === targetIndex) return;
-          const [moved] = cv.value.sectionOrder.splice(draggedSectionIndex.value, 1);
-          cv.value.sectionOrder.splice(targetIndex, 0, moved);
-          draggedSectionIndex.value = null;
-        };
-
-        const onItemDragStart = (arr, index, event) => {
-          draggedItemInfo.value = { arr, index };
-          event.dataTransfer.effectAllowed = "move";
-        };
-
-        const onItemDrop = (targetArr, targetIndex) => {
-          if (!draggedItemInfo.value) return;
-          const { arr, index } = draggedItemInfo.value;
-          if (arr === targetArr && index !== targetIndex) {
-            const [moved] = arr.splice(index, 1);
-            arr.splice(targetIndex, 0, moved);
+        const getPeriods = (item) => {
+          if (!item.periods) {
+            item.periods = item.period ? [item.period] : [""];
           }
-          draggedItemInfo.value = null;
+          return item.periods;
+        };
+
+        const addPeriod = (item) => {
+          if (!item.periods) {
+            item.periods = item.period ? [item.period] : [""];
+          }
+          item.periods.push("");
+        };
+
+        const removePeriod = (item, pIdx) => {
+          if (item.periods && item.periods.length > 1) {
+            item.periods.splice(pIdx, 1);
+          }
         };
 
         const triggerPrint = () => {
@@ -2529,7 +2554,7 @@
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          const name = cv.value.personal.fullName ? cv.value.personal.fullName.toLowerCase().replace(/\s+/g, '-') : "cv";
+          const name = cv.value.personal.fullName ? cv.value.personal.fullName.toLowerCase().replace(/\s+/g, "-") : "cv";
           a.download = `${name}.json`;
           a.click();
           URL.revokeObjectURL(url);
@@ -2569,6 +2594,12 @@
           };
           reader.readAsDataURL(file);
         };
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && showAboutModal.value) {
+            showAboutModal.value = false;
+          }
+        });
 
         return {
           cv,
