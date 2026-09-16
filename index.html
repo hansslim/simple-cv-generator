@@ -481,7 +481,10 @@
     .sheet-header {
       background: var(--cv-blue);
       color: #ffffff;
-      padding: calc(22px * var(--cv-scale)) calc(32px * var(--cv-scale));
+      padding-top: calc(var(--header-pt, 22px) * var(--cv-scale));
+      padding-bottom: calc(var(--header-pb, 22px) * var(--cv-scale));
+      padding-left: calc(32px * var(--cv-scale));
+      padding-right: calc(32px * var(--cv-scale));
       display: block;
       position: relative;
       flex-shrink: 0;
@@ -804,33 +807,18 @@
       .sheet-header {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-        padding-left: calc(18mm * var(--cv-scale)) !important;
-        padding-right: calc(16mm * var(--cv-scale)) !important;
         display: block !important;
       }
 
       .photo-wrapper {
-        float: right !important;
-        position: relative !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-        shape-outside: circle(50%) !important;
-      }
-
-      .photo-spacer {
-        float: right !important;
-        shape-outside: ellipse(75px 65px at 50% 0%) !important;
       }
 
       .contact-icon {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         fill: #ffffff !important;
-      }
-
-      .page-body {
-        padding-left: calc(18mm * var(--cv-scale)) !important;
-        padding-right: calc(16mm * var(--cv-scale)) !important;
       }
 
       [contenteditable="true"] {
@@ -966,6 +954,48 @@
             >
             <button class="btn btn-icon" @click="changeLeftColWidth(5)" :disabled="(cv.leftColWidth || 100) >= 200" title="Rozšířit">+</button>
             <button class="btn btn-icon" @click="cv.leftColWidth = 100" title="Reset na výchozí šířku (100 px)" style="font-size: 10px; padding: 2px 5px;">100px</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Odsazení jména od vrchu stránky</span>
+            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22 }} px</span>
+          </label>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button class="btn btn-icon" @click="changeHeaderPaddingTop(-2)" :disabled="(cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) <= 0" title="Zmenšit">-</button>
+            <input
+              type="range"
+              min="0"
+              max="70"
+              step="2"
+              :value="cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22"
+              @input="cv.headerPaddingTop = Number($event.target.value)"
+              style="flex: 1; accent-color: #2563eb;"
+            >
+            <button class="btn btn-icon" @click="changeHeaderPaddingTop(2)" :disabled="(cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) >= 70" title="Zvětšit">+</button>
+            <button class="btn btn-icon" @click="cv.headerPaddingTop = 22" title="Reset na výchozí (22 px)" style="font-size: 10px; padding: 2px 5px;">22px</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Modrý prostor pod údaji</span>
+            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #2563eb;">{{ cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22 }} px</span>
+          </label>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button class="btn btn-icon" @click="changeHeaderPaddingBottom(-2)" :disabled="(cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) <= 0" title="Zmenšit">-</button>
+            <input
+              type="range"
+              min="0"
+              max="70"
+              step="2"
+              :value="cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22"
+              @input="cv.headerPaddingBottom = Number($event.target.value)"
+              style="flex: 1; accent-color: #2563eb;"
+            >
+            <button class="btn btn-icon" @click="changeHeaderPaddingBottom(2)" :disabled="(cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) >= 70" title="Zvětšit">+</button>
+            <button class="btn btn-icon" @click="cv.headerPaddingBottom = 22" title="Reset na výchozí (22 px)" style="font-size: 10px; padding: 2px 5px;">22px</button>
           </div>
         </div>
       </div>
@@ -1287,7 +1317,7 @@
           </div>
         </div>
 
-        <div class="print-page" :class="{ 'is-single-page': !renderedPages.page2.length }" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px', '--cv-left-col': (cv.leftColWidth || 100) + 'px' }">
+        <div class="print-page" :class="{ 'is-single-page': !renderedPages.page2.length }" :style="{ '--cv-scale': cv.scale, '--cv-blue': cv.primaryColor, '--photo-size': (cv.personal.photoSize || 140) + 'px', '--cv-left-col': (cv.leftColWidth || 100) + 'px', '--header-pt': (cv.headerPaddingTop !== undefined ? cv.headerPaddingTop : 22) + 'px', '--header-pb': (cv.headerPaddingBottom !== undefined ? cv.headerPaddingBottom : 22) + 'px' }">
           <div class="a4-guide-line" v-if="showA4Guide && !renderedPages.page2.length" title="Hranice formátu A4 (297 mm)">
             <span class="a4-guide-badge">Konec A4 (297 mm)</span>
           </div>
@@ -1550,6 +1580,8 @@
       primaryColor: "#005aa0",
       scale: 1.2,
       leftColWidth: 100,
+      headerPaddingTop: 22,
+      headerPaddingBottom: 22,
       splitPoint: { section: "certificates", itemIndex: 2 },
       sectionOrder: [...defaultSectionOrder],
       sectionTitles: { ...defaultSectionTitles },
@@ -1627,6 +1659,18 @@
           const current = cv.value.leftColWidth || 100;
           const nextVal = Math.min(200, Math.max(70, current + delta));
           cv.value.leftColWidth = nextVal;
+        };
+
+        const changeHeaderPaddingTop = (delta) => {
+          const current = cv.value.headerPaddingTop !== undefined ? cv.value.headerPaddingTop : 22;
+          const nextVal = Math.min(70, Math.max(0, current + delta));
+          cv.value.headerPaddingTop = nextVal;
+        };
+
+        const changeHeaderPaddingBottom = (delta) => {
+          const current = cv.value.headerPaddingBottom !== undefined ? cv.value.headerPaddingBottom : 22;
+          const nextVal = Math.min(70, Math.max(0, current + delta));
+          cv.value.headerPaddingBottom = nextVal;
         };
 
         const onInlineEdit = (targetObj, key, event) => {
@@ -1893,6 +1937,8 @@
             primaryColor: cv.value.primaryColor,
             scale: cv.value.scale,
             leftColWidth: cv.value.leftColWidth || 100,
+            headerPaddingTop: cv.value.headerPaddingTop !== undefined ? cv.value.headerPaddingTop : 22,
+            headerPaddingBottom: cv.value.headerPaddingBottom !== undefined ? cv.value.headerPaddingBottom : 22,
             splitPoint: cv.value.splitPoint,
             sectionOrder: cv.value.sectionOrder,
             sectionTitles: cv.value.sectionTitles || { ...defaultSectionTitles },
@@ -1961,6 +2007,8 @@
           visibleContacts,
           changePhotoSize,
           changeLeftColWidth,
+          changeHeaderPaddingTop,
+          changeHeaderPaddingBottom,
           showA4Guide,
           fileInput,
           photoInput,
