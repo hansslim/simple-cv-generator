@@ -76,24 +76,89 @@
       margin: 0 auto;
     }
 
-    .action-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid #cbd5e1;
+    .app-header-container {
       position: sticky;
       top: 0;
       background: #f8fafc;
       z-index: 20;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 0 10px 0;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+
+    .brand-logo-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--cv-blue);
+      fill: currentColor;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      background: #e0f2fe;
+      color: #0369a1;
+      border-radius: 9999px;
+    }
+
+    .btn-about-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-about-trigger:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
     }
 
     .btn {
       padding: 6px 11px;
       font-size: 12px;
       font-weight: 600;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       border: 1px solid #cbd5e1;
       background: #ffffff;
@@ -102,26 +167,33 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 5px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     }
 
     .btn:hover {
       background: #f1f5f9;
       border-color: #94a3b8;
+      color: #0f172a;
     }
 
     .btn:disabled {
       opacity: 0.4;
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     .btn-primary {
       background: var(--cv-blue);
       border-color: var(--cv-blue);
       color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 90, 160, 0.25);
     }
 
     .btn-primary:hover {
-      filter: brightness(0.9);
+      filter: brightness(0.92);
+      box-shadow: 0 2px 4px rgba(0, 90, 160, 0.35);
+      color: #ffffff;
     }
 
     .btn-danger {
@@ -134,9 +206,10 @@
     }
 
     .btn-icon {
-      padding: 3px 7px;
+      padding: 4px 8px;
       font-size: 11px;
       line-height: 1;
+      border-radius: 4px;
     }
 
     .scale-control {
@@ -145,9 +218,10 @@
       gap: 4px;
       background: #ffffff;
       border: 1px solid #cbd5e1;
-      border-radius: 4px;
+      border-radius: 6px;
       padding: 2px 4px;
       margin-left: auto;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     }
 
     .scale-label {
@@ -161,6 +235,189 @@
 
     .hidden-input {
       display: none;
+    }
+
+    /* MODAL DIALOG */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 620px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      animation: modalSlideUp 0.2s ease-out;
+    }
+
+    @keyframes modalSlideUp {
+      from { transform: translateY(12px); opacity: 0.9; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+    }
+
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #64748b;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+
+    .modal-close-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .modal-section {
+      margin-bottom: 20px;
+    }
+
+    .modal-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .modal-feature-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .modal-feature-name {
+      font-weight: 700;
+      font-size: 12px;
+      color: #0f172a;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-feature-desc {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .modal-guide-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      counter-reset: guide-counter;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modal-guide-step {
+      counter-increment: guide-counter;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 12.5px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+
+    .modal-step-number {
+      background: var(--cv-blue);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 11px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .page-indicator {
@@ -791,7 +1048,9 @@
       }
 
       .editor-pane,
+      .app-header-container,
       .action-bar,
+      .modal-backdrop,
       .page-indicator {
         display: none !important;
       }
@@ -866,17 +1125,135 @@
 </head>
 <body>
   <div id="app">
-    <div class="editor-pane">
-      <div class="action-bar">
-        <button class="btn btn-primary" @click="triggerPrint">Tisk do PDF</button>
-        <button class="btn" @click="exportJson">Export JSON</button>
-        <button class="btn" @click="triggerImport">Import JSON</button>
-        <input type="file" ref="fileInput" class="hidden-input" accept=".json" @change="handleImport">
+    <!-- ABOUT MODAL -->
+    <div v-if="showAboutModal" class="modal-backdrop" @click.self="showAboutModal = false">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <svg style="width: 20px; height: 20px; color: var(--cv-blue); fill: currentColor;" viewBox="0 0 24 24">
+              <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <h2 id="about-modal-title" class="modal-title">O aplikaci Simple CV</h2>
+          </div>
+          <button class="modal-close-btn" @click="showAboutModal = false" title="Zavřít (Esc)">✕</button>
+        </div>
 
-        <div class="scale-control" title="Velikost písma a měřítko dokumentu">
-          <button class="btn btn-icon" @click="changeScale(-0.05)" :disabled="cv.scale <= 0.7">-</button>
-          <span class="scale-label" @dblclick="resetScale" title="Dvojklik pro reset měřítka">{{ Math.round(cv.scale * 100) }} %</span>
-          <button class="btn btn-icon" @click="changeScale(0.05)" :disabled="cv.scale >= 1.4">+</button>
+        <div class="modal-body">
+          <div class="modal-section">
+            <div class="modal-section-title">K čemu aplikace slouží</div>
+            <p style="margin: 0;">
+              Jednoduchý editor strukturovaného životopisu s přímým exportem do formátu A4. Vše funguje lokálně v prohlížeči bez nutnosti registrace, odesílání dat na server nebo instalace jakýchkoliv doplňků.
+            </p>
+          </div>
+
+          <div class="modal-section">
+            <div class="modal-section-title">Funkce a možnosti</div>
+            <div class="modal-features-grid">
+              <div class="modal-feature-card">
+                <div class="modal-feature-name">Data zůstávají u vás</div>
+                <div class="modal-feature-desc">Aplikace neposílá žádná data na internet. Vše se zpracovává pouze lokálně v prohlížeči.</div>
+              </div>
+              <div class="modal-feature-card">
+                <div class="modal-feature-name">Výstup přesně na A4</div>
+                <div class="modal-feature-desc">Rozvržení je navrženo pro tisk na standardní A4 s možností rozdělit delší obsah na dvě samostatné stránky.</div>
+              </div>
+              <div class="modal-feature-card">
+                <div class="modal-feature-name">Úpravy ve formuláři i náhledu</div>
+                <div class="modal-feature-desc">Texty můžete doplňovat buď v levém panelu, nebo kliknutím a psaním přímo v dokumentu.</div>
+              </div>
+              <div class="modal-feature-card">
+                <div class="modal-feature-name">Záloha a načtení (JSON)</div>
+                <div class="modal-feature-desc">Rozpracovaný životopis si můžete uložit do souboru JSON a kdykoliv se k němu vrátit.</div>
+              </div>
+              <div class="modal-feature-card">
+                <div class="modal-feature-name">Řazení položek</div>
+                <div class="modal-feature-desc">Pořadí sekcí, kontaktů i jednotlivých pozic v praxi lze libovolně přetahovat myší nebo posouvat šipkami.</div>
+              </div>
+              <div class="modal-feature-card">
+                <div class="modal-feature-name">Čistý výstup</div>
+                <div class="modal-feature-desc">Nevyplněná pole, prázdné sekce ani chybějící kontakty se do výsledného dokumentu nevykreslují.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-section">
+            <div class="modal-section-title">Postup</div>
+            <ol class="modal-guide-steps">
+              <li class="modal-guide-step">
+                <span class="modal-step-number">1</span>
+                <div>Vyplňte potřebné údaje v levém panelu nebo přímo v náhledu vpravo.</div>
+              </li>
+              <li class="modal-guide-step">
+                <span class="modal-step-number">2</span>
+                <div>V případě potřeby upravte měřítko (procenta v horní liště) nebo pořadí sekcí.</div>
+              </li>
+              <li class="modal-guide-step">
+                <span class="modal-step-number">3</span>
+                <div>Pokud je životopis delší, nůžkami u položky zvolte místo přechodu na 2. stranu.</div>
+              </li>
+              <li class="modal-guide-step">
+                <span class="modal-step-number">4</span>
+                <div>Uložte si zálohu přes <em>Export JSON</em> a vytvořte PDF přes <em>Tisk do PDF</em> (v tiskovém dialogu zvolte cíl Uložit jako PDF).</div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 11px; color: #94a3b8;">Verze 2.0 • Offline Ready</span>
+            <a href="https://github.com/hansslim/simple-cv-generator" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 4px; color: #64748b; text-decoration: none; font-size: 11px; font-weight: 600;" title="Otevřít GitHub repozitář">
+              <svg style="width: 13px; height: 13px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              <span>GitHub</span>
+            </a>
+          </div>
+          <button class="btn btn-primary" @click="showAboutModal = false">Rozumím</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="editor-pane">
+      <!-- APP HEADER & ACTION BAR -->
+      <div class="app-header-container">
+        <div class="brand-row">
+          <div class="brand-group">
+            <svg class="brand-logo-icon" viewBox="0 0 24 24">
+              <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <div class="brand-title">Simple CV Generator</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <a href="https://github.com/hansslim/simple-cv-generator" target="_blank" rel="noopener noreferrer" class="btn-about-trigger" title="GitHub repozitář" style="text-decoration: none;">
+              <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              <span>GitHub</span>
+            </a>
+            <button class="btn-about-trigger" @click="showAboutModal = true" title="Informace a nápověda">
+              <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              <span>O aplikaci</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-primary" @click="triggerPrint" title="Otevřít dialog tisku pro uložení do PDF">
+            <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+            <span>Tisk do PDF</span>
+          </button>
+          <button class="btn" @click="exportJson" title="Uložit data životopisu do JSON souboru">
+            <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+            <span>Export JSON</span>
+          </button>
+          <button class="btn" @click="triggerImport" title="Nahrát dříve uložený JSON soubor">
+            <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+            <span>Import JSON</span>
+          </button>
+          <input type="file" ref="fileInput" class="hidden-input" accept=".json" @change="handleImport">
+
+          <div class="scale-control" title="Měřítko písma a rozvržení dokumentu">
+            <button class="btn btn-icon" @click="changeScale(-0.05)" :disabled="cv.scale <= 0.7">-</button>
+            <span class="scale-label" @dblclick="resetScale" title="Dvojklik pro reset měřítka (120 %)">{{ Math.round(cv.scale * 100) }} %</span>
+            <button class="btn btn-icon" @click="changeScale(0.05)" :disabled="cv.scale >= 1.4">+</button>
+          </div>
         </div>
       </div>
 
@@ -1736,6 +2113,13 @@
         const fileInput = ref(null);
         const photoInput = ref(null);
         const showA4Guide = ref(true);
+        const showAboutModal = ref(false);
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && showAboutModal.value) {
+            showAboutModal.value = false;
+          }
+        });
 
         const draggedSectionIndex = ref(null);
         const draggedItemInfo = ref(null);
@@ -2202,7 +2586,8 @@
           isItemFilled,
           expandedSections,
           isCollapsed,
-          toggleCollapse
+          toggleCollapse,
+          showAboutModal
         };
       }
     }).mount("#app");
