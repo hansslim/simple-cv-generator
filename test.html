@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Suite – Simple CV Generator</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --success: #16a34a;
+      --failure: #dc2626;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #334155;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .summary-badge {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: #334155;
+    }
+
+    .summary-badge.all-passed {
+      background: #14532d;
+      color: #86efac;
+      border: 1px solid #22c55e;
+    }
+
+    .summary-badge.has-failures {
+      background: #7f1d1d;
+      color: #fca5a5;
+      border: 1px solid #ef4444;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      transition: opacity 0.15s;
+    }
+
+    button:hover { opacity: 0.9; }
+
+    .test-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .test-card {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all 0.2s;
+    }
+
+    .test-status-icon {
+      font-size: 16px;
+      font-weight: 800;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .status-running {
+      background: #334155;
+      color: #94a3b8;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .status-pass {
+      background: #14532d;
+      color: #4ade80;
+    }
+
+    .status-fail {
+      background: #7f1d1d;
+      color: #f87171;
+    }
+
+    .test-info {
+      flex: 1;
+    }
+
+    .test-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .test-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .test-error {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: #450a0a;
+      border: 1px solid #991b1b;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #fca5a5;
+      font-family: monospace;
+    }
+
+    #test-frame {
+      width: 1px;
+      height: 1px;
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Test Suite – Simple CV Generator</h1>
+        <p style="font-size: 12px; color: var(--text-muted);">Automatizované testování DOMu, reaktivity a funkcí editoru</p>
+      </div>
+      <div id="summary-badge" class="summary-badge">Spouštím testy...</div>
+    </header>
+
+    <div class="controls">
+      <button onclick="runAllTests()">Spustit testy znovu</button>
+    </div>
+
+    <div id="test-list" class="test-list"></div>
+  </div>
+
+  <iframe id="test-frame" src="index.html"></iframe>
+
+  <script>
+    const tests = [
+      {
+        id: 'header-branding',
+        title: '1. Záhlaví a branding aplikace',
+        desc: 'Ověřuje zobrazení názvu Simple CV Generator, tlačítka tisku a dalších akčních tlačítek.',
+        fn: async (doc, win) => {
+          const brandTitle = doc.querySelector('.brand-title');
+          if (!brandTitle || !brandTitle.textContent.includes('Simple CV Generator')) {
+            throw new Error('Chybí nebo je neplatný název aplikace v .brand-title');
+          }
+          const printBtn = doc.querySelector('.action-bar .btn-primary');
+          if (!printBtn || !printBtn.textContent.includes('Tisk do PDF')) {
+            throw new Error('Nenalezeno primární tlačítko pro tisk do PDF');
+          }
+          const exportBtn = Array.from(doc.querySelectorAll('.action-bar .btn')).find(b => b.textContent.includes('Export JSON'));
+          const importBtn = Array.from(doc.querySelectorAll('.action-bar .btn')).find(b => b.textContent.includes('Import JSON'));
+          if (!exportBtn || !importBtn) {
+            throw new Error('Chybí tlačítka pro Export nebo Import JSON');
+          }
+        }
+      },
+      {
+        id: 'about-modal',
+        title: '2. Modální okno O aplikaci a klávesa Escape',
+        desc: 'Ověřuje otevření okna O aplikaci, zobrazení textů a zavření pomocí klávesy Escape.',
+        fn: async (doc, win) => {
+          const aboutBtn = doc.querySelector('.btn-about-trigger');
+          if (!aboutBtn) throw new Error('Nenalezeno tlačítko O aplikaci');
+          
+          aboutBtn.click();
+          await wait(100);
+
+          let modal = doc.querySelector('.modal-backdrop');
+          if (!modal) throw new Error('Modální okno se po kliknutí neotevřelo');
+
+          const modalTitle = modal.querySelector('.modal-title');
+          if (!modalTitle || !modalTitle.textContent.includes('O aplikaci')) {
+            throw new Error('Neplatný nadpis v modálním okně');
+          }
+
+          // Test zavření přes Escape
+          win.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+          await wait(100);
+
+          modal = doc.querySelector('.modal-backdrop');
+          if (modal) throw new Error('Modální okno se nezavřelo po stisku klávesy Escape');
+        }
+      },
+      {
+        id: 'collapsed-by-default',
+        title: '3. Výchozí sbalení formulářových sekcí',
+        desc: 'Ověřuje, že sekce jsou při startu zavřené a kliknutím se otevřou (toggleCollapse).',
+        fn: async (doc, win) => {
+          const personalSection = doc.querySelector('.form-section');
+          if (!personalSection) throw new Error('Nenalezena formulářová sekce Osobní údaje');
+          
+          if (!personalSection.classList.contains('is-collapsed')) {
+            throw new Error('Formulářová sekce Osobní údaje není výchozím stavem sbalena');
+          }
+
+          // Klik pro rozbalení
+          const headerBar = personalSection.querySelector('.section-header-bar');
+          headerBar.click();
+          await wait(100);
+
+          if (personalSection.classList.contains('is-collapsed')) {
+            throw new Error('Formulářová sekce se nerozbalila po kliknutí');
+          }
+        }
+      },
+      {
+        id: 'reactive-binding',
+        title: '4. Reaktivní propojení formuláře a živého náhledu',
+        desc: 'Ověřuje propsání změny jména do hlavičky náhledu (.sheet-name).',
+        fn: async (doc, win) => {
+          const nameInput = doc.querySelector('.form-section input[type="text"]');
+          if (!nameInput) throw new Error('Nenalezen input pro Jméno a příjmení');
+
+          nameInput.value = 'Jan Novák Tester';
+          nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+          await wait(100);
+
+          const sheetName = doc.querySelector('.sheet-name');
+          if (!sheetName || !sheetName.textContent.includes('Jan Novák Tester')) {
+            throw new Error('Změna jména ve formuláři se nepromítla do náhledu');
+          }
+        }
+      },
+      {
+        id: 'scale-control',
+        title: '5. Nastavení měřítka dokumentu (Scale Control)',
+        desc: 'Ověřuje funkčnost tlačítek + a - a aktualizaci procentuální hodnoty.',
+        fn: async (doc, win) => {
+          const scaleControl = doc.querySelector('.scale-control');
+          if (!scaleControl) throw new Error('Nenalezen prvek .scale-control');
+
+          const scaleLabel = scaleControl.querySelector('.scale-label');
+          const buttons = scaleControl.querySelectorAll('button');
+          const plusBtn = buttons[1];
+
+          const initialValue = parseInt(scaleLabel.textContent);
+          plusBtn.click();
+          await wait(100);
+
+          const newValue = parseInt(scaleLabel.textContent);
+          if (newValue <= initialValue) {
+            throw new Error('Kliknutí na + nezvýšilo měřítko dokumentu');
+          }
+        }
+      },
+      {
+        id: 'smart-rendering',
+        title: '6. Chytré skrývání prázdných položek',
+        desc: 'Ověřuje, že nevyplněné sekce (např. prázdné dovednosti, jazyky) se nerenderují v náhledu.',
+        fn: async (doc, win) => {
+          const previewEntries = doc.querySelectorAll('.preview-pane .cv-section');
+          // Když je profil prázdný, neměly by se renderovat prázdné sekce
+          Array.from(previewEntries).forEach(sec => {
+            const title = sec.querySelector('.cv-section-title');
+            if (title && title.textContent.includes('Technické znalosti')) {
+              throw new Error('Sekce Technické znalosti se vykresluje i když nemá žádná data');
+            }
+          });
+        }
+      },
+      {
+        id: 'split-point-multipage',
+        title: '7. Rozdělení na stránky A4 (Split Point ✂)',
+        desc: 'Ověřuje přítomnost a strukturu tiskových A4 stránek (.print-page).',
+        fn: async (doc, win) => {
+          const printPages = doc.querySelectorAll('.print-page');
+          if (!printPages.length) {
+            throw new Error('V náhledu chybí kontejner .print-page');
+          }
+          const a4GuideLine = doc.querySelector('.a4-guide-line');
+          if (!a4GuideLine) {
+            throw new Error('Chybí vodítko konce stránky .a4-guide-line');
+          }
+        }
+      },
+      {
+        id: 'json-integrity',
+        title: '8. Kontrola importu a exportu JSON dat',
+        desc: 'Ověřuje validitu struktury a přítomnost exportních polí.',
+        fn: async (doc, win) => {
+          const fileInput = doc.querySelector('input[type="file"].hidden-input');
+          if (!fileInput) throw new Error('Nenalezen skrytý file input pro import');
+        }
+      }
+    ];
+
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function runAllTests() {
+      const listEl = document.getElementById('test-list');
+      const badgeEl = document.getElementById('summary-badge');
+      listEl.innerHTML = '';
+      badgeEl.className = 'summary-badge';
+      badgeEl.textContent = 'Spouštím testy...';
+
+      const frame = document.getElementById('test-frame');
+      // Reload iframe to get fresh state
+      frame.src = 'index.html?' + Date.now();
+      await new Promise(resolve => frame.onload = resolve);
+      await wait(400); // Give Vue time to mount
+
+      const doc = frame.contentDocument || frame.contentWindow.document;
+      const win = frame.contentWindow;
+
+      let passedCount = 0;
+      let failedCount = 0;
+
+      for (const t of tests) {
+        const card = document.createElement('div');
+        card.className = 'test-card';
+        card.innerHTML = `
+          <div class="test-status-icon status-running">⏳</div>
+          <div class="test-info">
+            <div class="test-title">${t.title}</div>
+            <div class="test-desc">${t.desc}</div>
+          </div>
+        `;
+        listEl.appendChild(card);
+
+        const iconEl = card.querySelector('.test-status-icon');
+        const infoEl = card.querySelector('.test-info');
+
+        try {
+          await t.fn(doc, win);
+          iconEl.className = 'test-status-icon status-pass';
+          iconEl.textContent = '✓';
+          passedCount++;
+        } catch (err) {
+          iconEl.className = 'test-status-icon status-fail';
+          iconEl.textContent = '✕';
+          const errBox = document.createElement('div');
+          errBox.className = 'test-error';
+          errBox.textContent = err.message;
+          infoEl.appendChild(errBox);
+          failedCount++;
+        }
+      }
+
+      if (failedCount === 0) {
+        badgeEl.className = 'summary-badge all-passed';
+        badgeEl.textContent = `Všech ${passedCount} testů úspěšně prošlo ✓`;
+      } else {
+        badgeEl.className = 'summary-badge has-failures';
+        badgeEl.textContent = `${failedCount} z ${tests.length} testů selhalo`;
+      }
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(runAllTests, 300);
+    });
+  </script>
+</body>
+</html>

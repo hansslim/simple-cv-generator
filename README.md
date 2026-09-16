@@ -34,6 +34,19 @@ Aplikace nevyžaduje instalaci balíčků ani buildovací nástroje.
    - Okraje nastavte na **Výchozí** nebo **Žádné**.
    - Zapněte volbu **Grafika na pozadí**.
 
+## Testování
+
+Součástí projektu jsou dva způsoby testování:
+
+1. **V prohlížeči (interaktivní DOM testy)**:
+   - Otevřete soubor `test.html` v prohlížeči.
+   - Automaticky prověří načtení aplikace, otevírání modálního okna, sbalování sekcí, reaktivitu a skrytí prázdných položek.
+
+2. **V příkazové řádce (CLI validace)**:
+   ```bash
+   python test_editor.py
+   ```
+
 ## Technologie
 
 - Vue.js 3 (Composition API načítané přes CDN)
@@ -41,4 +54,4 @@ Aplikace nevyžaduje instalaci balíčků ani buildovací nástroje.
 
 ## Licence
 
-MIT (vibecoded by Gemini 3.7 Flash)
+MIT (vibecoded)
